@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AnalyzeResult } from "./types";
 import { MultiLayerTimeline } from "./ui/MultiLayerTimeline";
 import { SelectedTokenPanel } from "./ui/SelectedTokenPanel";
@@ -27,51 +27,6 @@ export default function ToolsPage() {
             setLoading(false);
         }
     }
-
-    // Step3 per-token effective map (אם קיים)
-    const effectiveByTokenId = useMemo(() => {
-        const m = new Map<string, { hebName: string; role: "mesharet" | "mafsik"; reason?: string }>();
-        const perToken = result?.taamim ?? [];
-        for (const x of perToken) {
-            if (x?.tokenId && x?.effective?.hebName && x?.effective?.role) {
-                m.set(x.tokenId, x.effective);
-            }
-        }
-        return m;
-    }, [result]);
-
-    // Badge text על כל מילה: קודם Step3 effective (אם קיים), אחרת Step2
-    const tokenBadges = useMemo(() => {
-        if (!result) return undefined;
-
-        const out: Record<number, string> = {};
-
-        // Step2 map מהיר
-        const step2ById = new Map(result.taamim.map((x) => [x.tokenId, x]));
-
-        for (let i = 0; i < result.tokens.length; i++) {
-            const t = result.tokens[i];
-            if (t.isPasek || t.isSofPasuq) continue;
-
-            const eff = effectiveByTokenId.get(t.id);
-            if (eff) {
-                out[i] = eff.role === "mafsik" ? "מפסיק" : "משרת";
-                continue;
-            }
-
-            const s2 = step2ById.get(t.id);
-            const known = (s2?.identified ?? []).filter((x) => x.kind === "KNOWN") as Array<{
-                kind: "KNOWN";
-                role: "mesharet" | "mafsik";
-            }>;
-
-            if (known.length === 0) out[i] = "—";
-            else if (known.some((k) => k.role === "mafsik")) out[i] = "מפסיק";
-            else out[i] = "משרת";
-        }
-
-        return out;
-    }, [result, effectiveByTokenId]);
 
     return (
         <main style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
@@ -140,7 +95,7 @@ export default function ToolsPage() {
                                 selectedSourceIndex={selectedSourceIndex}
                                 onSelectSourceIndex={setSelectedSourceIndex}
                                 debug={result.debug}
-                                tokenBadges={tokenBadges}
+                                taamim={result.taamim}
                             />
                         </div>
 

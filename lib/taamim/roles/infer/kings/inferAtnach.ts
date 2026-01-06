@@ -39,8 +39,8 @@ export function inferAtnach(tokens: TokenGlyph[], step2: TokenStep2[], emperorTo
         for (let i = emperorTo - 1; i >= 0; i--) {
             if (tokens[i]?.isPasek || tokens[i]?.isSofPasuq) continue;
             const info = step2[i];
-            const hasMesharet = info?.identified.some((x) => x.kind === "KNOWN" && x.role === "mesharet");
-            if (hasMesharet) {
+            const isMesharet = info?.identified?.role === "mesharet";
+            if (isMesharet) {
                 return {index: i, inferredCode: "ATNACH_HIDDEN_NEAR_SILLUQ", effectiveTaam: "ATNACH"};
             }
         }

@@ -14,17 +14,10 @@ export function SelectedTokenPanel({
     const s3 = result.taamim?.find?.((x: any) => x.tokenId === token.id) ?? null;
     const effective = s3?.effective ?? null;
 
-    const step2Known =
-        (s2?.identified?.filter((x) => x.kind === "KNOWN") as
-            | Array<{ kind: "KNOWN"; hebName: string; key: string; role: "mesharet" | "mafsik" }>
-            | undefined) ?? [];
-
     const step2RoleText =
-        step2Known.length === 0
-            ? "—"
-            : step2Known.some((k) => k.role === "mafsik")
-                ? "מפסיק"
-                : "משרת";
+        s2?.identified ?
+            (s2?.identified.role === "mafsik" ? "מפסיק" : "משרת")
+            : "—";
 
     const taamMarks = token.clusters
         .flatMap((c) => c.marks.filter((m) => m.kind === "TAAM"))
@@ -58,22 +51,19 @@ export function SelectedTokenPanel({
 
             <div style={{marginTop: 10}}>
                 <b>הטעם שזוהה (תו במילה):</b>{" "}
-                <span style={{opacity: 0.85}}>{step2Known.length ? "" : "—"}</span>
-                {step2Known.length ? (
-                    <ul style={{margin: "8px 0 0", paddingInlineStart: 18}}>
-                        {s2!.identified.map((x, idx) =>
-                            x.kind === "KNOWN" ? (
-                                <li key={x.key + idx}>
-                                    {x.hebName} <span style={{opacity: 0.75}}>({x.key}, {x.role})</span>
-                                </li>
-                            ) : (
-                                <li key={x.u + idx}>
-                                    UNKNOWN <span style={{opacity: 0.75}}>({x.u})</span>
-                                </li>
-                            )
-                        )}
-                    </ul>
-                ) : null}
+                <ul style={{margin: "8px 0 0", paddingInlineStart: 18}}>
+                    {s2!.identified ? (
+                        <li key={s2!.identified.key}>
+                            {s2!.identified.hebName} <span
+                            style={{opacity: 0.75}}>({s2!.identified.key}, {s2!.identified.role})</span>
+                        </li>
+                    ) : (
+                        <li key={'unknown-taamim-identified-key'}>
+                            UNKNOWN
+                        </li>
+                    )
+                    }
+                </ul>
             </div>
 
             <div style={{marginTop: 10}}>

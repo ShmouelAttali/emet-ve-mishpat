@@ -43,7 +43,7 @@ export function buildAfterAtnachKingSpan(opts: {
     return {
         id: `${opts.parent.id}/L2/AFTER_ATNACH`,
         layer: 2,
-        name: "מלך: אחרי אתנח",
+        name: "אחרי אתנח",
         from,
         to,
         causedBy: { tokenIndex: opts.silluqIndex, label: "סילוק" },

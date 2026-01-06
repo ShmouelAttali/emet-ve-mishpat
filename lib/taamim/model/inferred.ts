@@ -19,6 +19,9 @@ export type InferredCode =
     | "DCHI_EXPLICIT"
     | "DCHI_MAHAPACH_LEGARMEH"
     | "DCHI_HIDDEN_NEAR_ATNACH_SHORT"
+
+    | "MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_BY_REVIa_MUGRASH_IN_DOMAIN"
+    | "MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_WHEN_SHALSHELET_GEDOLA_PRESENT"
     ;
 
 export type Inference = {
@@ -28,6 +31,8 @@ export type Inference = {
 };
 
 export const INFERRED_CODE_REASON: Record<InferredCode, string> = {
+    MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_BY_REVIa_MUGRASH_IN_DOMAIN: "מהפך לגרמיה בתחום שלאחר האתנח",
+    MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_WHEN_SHALSHELET_GEDOLA_PRESENT: "מהפך לגרמיה נסתר - הומר במשרת כי היה פחות מ-3 הברות עד הסילוק",
     DCHI_EXPLICIT: "דחי מפורש",
     DCHI_HIDDEN_NEAR_ATNACH_SHORT: "דחי נסתר: פחות מ-3 הברות עד האתנח → המשרת האחרון לפני האתנח",
     DCHI_MAHAPACH_LEGARMEH: "מהפך לגרמיה במקום דחי - שולט על תיבתו (צריך אישור)",

@@ -1,4 +1,4 @@
-import type { Anchor, InferInput, InferRule } from "../types";
+import type {Anchor, InferInput, InferRule} from "../types";
 
 /**
  * The controlling King of the current king-domain.
@@ -13,6 +13,7 @@ export type KingLeader = Anchor & {
     atnachIndex?: number;
     /** Optional: silluq index (end of emperor domain) */
     silluqIndex?: number;
+    isAfterAtnach: boolean;
 };
 
 export type ViceroyRuleInput = InferInput<KingLeader>;

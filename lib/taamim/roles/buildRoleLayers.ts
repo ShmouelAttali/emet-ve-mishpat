@@ -1,45 +1,37 @@
-import type { TokenGlyph } from "../../text/tokenize";
-import type { TokenStep2 } from "../step2Local";
-import type { Taam } from "../model/taam";
-import { TAAM_META } from "../model/taam";
-import type { Inference } from "../model/inferred";
+import type {TokenGlyph} from "../../text/tokenize";
+import type {TokenStep2} from "../step2Local";
+import {TAAM_META} from "../model/taam";
+import type {Inference} from "../model/inferred";
 
-import type { RoleLayers, RolesDebug, Span, TokenStep2Enriched } from "./types";
+import type {RoleLayers, RolesDebug, Span, TokenStep2Enriched} from "./types";
 
-import { applyInference } from "./apply/applyInference";
-import { inferKings } from "./infer/kings/inferKings";
+import {applyInference} from "./apply/applyInference";
+import {inferKings} from "./infer/kings/inferKings";
 
-import { createTaken, tryTake } from "./engine/taken";
-import { buildKingDomains } from "./domains/kingDomains";
-import { buildViceroyDomains } from "./domains/viceroyDomains";
-import { buildThirdDomains } from "./domains/thirdDomains";
-import { inferViceroys } from "./infer/viceroys/inferViceroys";
-import { inferThirds } from "./infer/thirds/inferThirds";
-
-// Note: types moved to ./types to avoid cycles and allow domains modules.
-
-function firstKnownTaam(t: TokenStep2): Taam {
-    const k = t.identified.find((x) => x.kind === "KNOWN") as any;
-    return (k?.key as Taam) ?? "UNKNOWN";
-}
+import {createTaken, tryTake} from "./engine/taken";
+import {buildKingDomains} from "./domains/kingDomains";
+import {buildViceroyDomains} from "./domains/viceroyDomains";
+import {buildThirdDomains} from "./domains/thirdDomains";
+import {inferViceroys} from "./infer/viceroys/inferViceroys";
+import {inferThirds} from "./infer/thirds/inferThirds";
 
 function inferenceAnchorLabel(inf: Inference): { label: string; name: string } {
     // שמות להצגה על span anchors
     const taam = inf.effectiveTaam;
-    if (taam === "OLEH_VEYORED") return { label: "עולה־ויורד", name: "מלך: עולה־ויורד" };
-    if (taam === "ATNACH") return { label: "אתנח", name: "מלך: אתנח" };
+    if (taam === "OLEH_VEYORED") return {label: "עולה־ויורד", name: "מלך: עולה־ויורד"};
+    if (taam === "ATNACH") return {label: "אתנח", name: "מלך: אתנח"};
 
-    if (taam === "DCHI") return { label: "דחי", name: "משנה: דחי" };
-    if (taam === "TSINOR") return { label: "צינור", name: "משנה: צינור" };
-    if (taam === "REVIa_QATAN") return { label: "רביע קטן", name: "משנה: רביע קטן" };
-    if (taam === "REVIa_GADOL") return { label: "רביע גדול", name: "משנה: רביע גדול" };
-    if (taam === "REVIa_MUGRASH") return { label: "רביע מוגרש", name: "אחרי אתנח: רביע מוגרש" };
+    if (taam === "DCHI") return {label: "דחי", name: "משנה: דחי"};
+    if (taam === "TSINOR") return {label: "צינור", name: "משנה: צינור"};
+    if (taam === "REVIa_QATAN") return {label: "רביע קטן", name: "משנה: רביע קטן"};
+    if (taam === "REVIa_GADOL") return {label: "רביע גדול", name: "משנה: רביע גדול"};
+    if (taam === "REVIa_MUGRASH") return {label: "רביע מוגרש", name: "אחרי אתנח: רביע מוגרש"};
 
-    if (taam === "MAHAPAKH_LEGARMEH") return { label: "מהפך לגרמיה", name: "שליש: מהפך לגרמיה" };
-    if (taam === "AZLA_LEGARMEH") return { label: "אזלא לגרמיה", name: "שליש: אזלא לגרמיה" };
-    if (taam === "PAZER") return { label: "פזר", name: "שליש: פזר" };
+    if (taam === "MAHAPAKH_LEGARMEH") return {label: "מהפך לגרמיה", name: "שליש: מהפך לגרמיה"};
+    if (taam === "AZLA_LEGARMEH") return {label: "אזלא לגרמיה", name: "שליש: אזלא לגרמיה"};
+    if (taam === "PAZER") return {label: "פזר", name: "שליש: פזר"};
 
-    return { label: taam, name: taam };
+    return {label: taam, name: taam};
 }
 
 export function buildRoleLayers(
@@ -56,7 +48,7 @@ export function buildRoleLayers(
 
     // 1) Create enriched tokens with default effective = firstKnownTaam
     const enriched: TokenStep2Enriched[] = step2.map((t) => {
-        const taam = firstKnownTaam(t);
+        const taam = t.identified?.key!;
         const meta = TAAM_META[taam] ?? TAAM_META.UNKNOWN;
         return {
             ...t,
@@ -80,7 +72,7 @@ export function buildRoleLayers(
         name: "קיסר (סילוק)",
         from: 0,
         to: silluqIndex,
-        causedBy: { tokenIndex: silluqIndex, label: "סילוק" },
+        causedBy: {tokenIndex: silluqIndex, label: "סילוק"},
     };
 
     // 3) Kings inference (single coherent entry point)
@@ -88,8 +80,8 @@ export function buildRoleLayers(
         tokens,
         step2: enriched,
         taken,
-        scope: { from: emperor.from, to: emperor.to, prior: [] },
-        leader: { index: emperor.to, taam: "SILLUQ" as any, silluqIndex: emperor.to },
+        scope: {from: emperor.from, to: emperor.to, prior: []},
+        leader: {index: emperor.to, taam: "SILLUQ" as any, silluqIndex: emperor.to},
     });
 
     // apply + take
@@ -99,12 +91,12 @@ export function buildRoleLayers(
         applyInference(enriched, inf);
     }
 
-    const { kings, atnachRoleIndex, oleVeyoredIndex, kingLeaderBySpanId } = buildKingDomains({
+    const {kings, atnachRoleIndex, oleVeyoredIndex, kingLeaderBySpanId} = buildKingDomains({
         emperor,
         kingInfs,
         toAnchor: (k) => {
-            const { label, name } = inferenceAnchorLabel(k);
-            return { tokenIndex: k.index!, label, name };
+            const {label, name} = inferenceAnchorLabel(k);
+            return {tokenIndex: k.index!, label, name};
         },
     });
 
@@ -112,20 +104,20 @@ export function buildRoleLayers(
     const viceroyInfs: Inference[] = [];
     for (const k of kings) {
         const king = kingLeaderBySpanId.get(k.id);
-
         const leader = {
             index: king?.index ?? k.to,
             taam: (king?.taam as any) ?? "UNKNOWN",
             oleVeyoredIndex,
             atnachIndex: atnachRoleIndex,
             silluqIndex,
+            isAfterAtnach: king?.isAfterAtnach ?? false
         };
 
         const infs = inferViceroys({
             tokens,
             step2: enriched,
             taken,
-            scope: { from: k.from, to: k.to, prior: [] },
+            scope: {from: k.from, to: k.to, prior: []},
             leader,
         });
 
@@ -143,8 +135,8 @@ export function buildRoleLayers(
         kings,
         viceroyInfs,
         toAnchor: (inf) => {
-            const { label, name } = inferenceAnchorLabel(inf);
-            return { tokenIndex: inf.index!, label, name };
+            const {label, name} = inferenceAnchorLabel(inf);
+            return {tokenIndex: inf.index!, label, name};
         },
     });
 
@@ -161,14 +153,14 @@ export function buildRoleLayers(
         const leader = {
             index: viceroyIndex,
             taam: (viceroyInf?.effectiveTaam as any) ?? "UNKNOWN",
-            king: kingLeader?.index != null ? { index: kingLeader.index, taam: kingLeader.taam as any } : undefined,
+            king: kingLeader?.index != null ? {index: kingLeader.index, taam: kingLeader.taam as any} : undefined,
         };
 
         const infs = inferThirds({
             tokens,
             step2: enriched,
             taken,
-            scope: { from: v.from, to: v.to, prior: [] },
+            scope: {from: v.from, to: v.to, prior: []},
             leader,
         });
 
@@ -186,8 +178,8 @@ export function buildRoleLayers(
         viceroys,
         thirdInfs,
         toAnchor: (inf) => {
-            const { label, name } = inferenceAnchorLabel(inf);
-            return { tokenIndex: inf.index!, label, name };
+            const {label, name} = inferenceAnchorLabel(inf);
+            return {tokenIndex: inf.index!, label, name};
         },
     });
 
@@ -202,14 +194,14 @@ export function buildRoleLayers(
         silluqIndex: emperor.to,
         atnachRoleIndex,
         oleVeyoredIndex,
-        taken: Array.from(taken.takenBy.entries()).map(([idx, layer]) => ({ idx, layer })),
+        taken: Array.from(taken.takenBy.entries()).map(([idx, layer]) => ({idx, layer})),
         kingAnchors: kingInfs
             .filter((k) => k.index != null)
             .map((k) => {
-                const { label } = inferenceAnchorLabel(k);
-                return { tokenIndex: k.index!, role: k.effectiveTaam, label };
+                const {label} = inferenceAnchorLabel(k);
+                return {tokenIndex: k.index!, role: k.effectiveTaam, label};
             }),
     };
 
-    return { layers, debug, tokens: enriched };
+    return {layers, debug, tokens: enriched};
 }

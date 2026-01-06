@@ -1,14 +1,14 @@
-import type { TokenGlyph } from "@/lib/text/tokenize";
-import type { TokenStep2 } from "@/lib/taamim/step2Local";
 import type { Inference } from "@/lib/taamim/model/inferred";
-import type { TakenState } from "@/lib/taamim/roles/engine/taken";
 import { isTaken } from "@/lib/taamim/roles/engine/taken";
 
-import type { KingLeader, ViceroyRule, ViceroyRuleInput } from "./types";
+import type { ViceroyRule, ViceroyRuleInput } from "./types";
 
 import { inferDchiViceroy } from "./inferDchi";
 import { inferTsinorViceroy } from "./inferTsinor";
 import { inferReviaViceroy } from "./inferRevia";
+import {
+    inferMahapakhLegarmehAfterAtnachViceroy
+} from "@/lib/taamim/roles/infer/viceroys/inferMahapachLegarmehAfterAtnach";
 
 function sanitize(infs: Inference[], input: ViceroyRuleInput): Inference[] {
     const out: Inference[] = [];
@@ -29,7 +29,7 @@ function sanitize(infs: Inference[], input: ViceroyRuleInput): Inference[] {
  */
 export function inferViceroys(input: ViceroyRuleInput): Inference[] {
     // order = priority
-    const rules: ViceroyRule[] = [inferDchiViceroy, inferTsinorViceroy, inferReviaViceroy];
+    const rules: ViceroyRule[] = [inferDchiViceroy, inferTsinorViceroy, inferReviaViceroy, inferMahapakhLegarmehAfterAtnachViceroy];
 
     const collected: Inference[] = [];
 
@@ -41,38 +41,4 @@ export function inferViceroys(input: ViceroyRuleInput): Inference[] {
 
     collected.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
     return collected;
-}
-
-/**
- * Backwards-compatible wrapper for older call sites.
- */
-export function inferViceroysInKingDomain(opts: {
-    tokens: TokenGlyph[];
-    step2: TokenStep2[];
-    taken: TakenState;
-    domain: { from: number; to: number };
-    /** index of Oleh-Veyored king in the pasuk (if exists) */
-    oleVeyoredIndex?: number;
-    /** index of Atnach king in the pasuk (if exists) */
-    atnachRoleIndex?: number;
-    /** index of Silluq (end of emperor) */
-    silluqIndex?: number;
-    /** controlling king for this domain (if known) */
-    king?: { index: number; taam: any };
-}): Inference[] {
-    const leader: KingLeader = {
-        index: opts.king?.index ?? (opts.atnachRoleIndex ?? opts.oleVeyoredIndex ?? opts.domain.to),
-        taam: (opts.king?.taam as any) ?? "UNKNOWN",
-        oleVeyoredIndex: opts.oleVeyoredIndex,
-        atnachIndex: opts.atnachRoleIndex,
-        silluqIndex: opts.silluqIndex,
-    };
-
-    return inferViceroys({
-        tokens: opts.tokens,
-        step2: opts.step2,
-        taken: opts.taken,
-        scope: { from: opts.domain.from, to: opts.domain.to, prior: [] },
-        leader,
-    });
 }

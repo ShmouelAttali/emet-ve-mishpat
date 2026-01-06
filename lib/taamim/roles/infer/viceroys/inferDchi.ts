@@ -5,7 +5,7 @@ import type { ViceroyRuleInput } from "./types";
 import {countSyllablesFromStartToTaamAnchor} from "@/lib/taamim/syllables";
 
 function hasAnyMesharet(step2Tok: any): boolean {
-    return !!step2Tok?.identified?.some((x: any) => x.kind === "KNOWN" && x.role === "mesharet");
+    return step2Tok?.identified?.role === "mesharet";
 }
 
 function findLastMesharetBeforeIndex(input: ViceroyRuleInput, idxExclusive: number): number | undefined {
@@ -47,7 +47,7 @@ export function inferDchiViceroy(input: ViceroyRuleInput): Inference[] {
         const atIdx = leader.index;
         const atTok = tokens[atIdx];
         if (atTok && !atTok.isPasek && !atTok.isSofPasuq) {
-            const syll = countSyllablesFromStartToTaamAnchor(atTok, "ATNACH");
+            const syll = countSyllablesFromStartToTaamAnchor(atTok, step2[atIdx].identified!.key);
             if (syll != null && syll <= 3) {
                 const mesharetIdx = findLastMesharetBeforeIndex(input, atIdx);
                 if (mesharetIdx != null) {
