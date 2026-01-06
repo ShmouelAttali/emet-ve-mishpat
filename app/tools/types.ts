@@ -1,3 +1,5 @@
+import {TokenStep2Enriched} from "@/lib/taamim/roles/types";
+
 export type Span = {
     id: string;
     layer: 1 | 2 | 3 | 4;
@@ -29,37 +31,14 @@ export type AnalyzeResult = {
         isSofPasuq?: boolean;
     }>;
 
-    taamInventory: Array<{
-        u: string;
-        cp: string;
-        count: number;
-        lastLetterCount: number;
-        examples: string[];
-    }>;
-
-    step3: {
-        layers: {
-            emperor: Span[];
-            kings: Span[];
-            viceroys: Span[];
-            thirds: Span[];
-        };
-        debug: any;
-
-        tokens: Array<{
-            tokenId: string;
-            observed: { hasPasekAfter: boolean; hasSofPasuqAfter: boolean };
-            identified: Array<
-                | { kind: "KNOWN"; key: string; hebName: string; role: "mesharet" | "mafsik"; consumedU: string[] }
-                | { kind: "UNKNOWN"; u: string }
-            >;
-            effective: {
-                key: string;
-                hebName: string;
-                role: "mesharet" | "mafsik";
-                reason: string;
-            };
-        }>;
+    layers: {
+        emperor: Span[];
+        kings: Span[];
+        viceroys: Span[];
+        thirds: Span[];
     };
+    debug: any;
+
+    taamim: Array<TokenStep2Enriched>;
 };
 

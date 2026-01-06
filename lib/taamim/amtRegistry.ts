@@ -1,4 +1,7 @@
+import {Taam} from "@/lib/taamim/model/taam";
+
 export type AmtGlyphKey =
+    | "METEG"
     | "ATNACH"
     | "REVIa"
     | "PAZER"
@@ -13,6 +16,7 @@ export type AmtGlyphKey =
     | "TIPCHA"
     | "MUGRASH_MARK" // e.g. ֝
     | "GALGAL"
+    | "SHALSHELET"
     ;
 
 export const GLYPH_TO_KEY: Record<string, AmtGlyphKey> = {
@@ -30,4 +34,46 @@ export const GLYPH_TO_KEY: Record<string, AmtGlyphKey> = {
     "U+05AD": "DCHI",   // ֭ דחי
     "U+059D": "MUGRASH_MARK",  // ֝  (used in "רביע מוגרש" pattern with רביע)
     "U+05AA": "GALGAL", // ֪  גלגל (משרת)
+    "U+05BD": "METEG", // מתג או סילוק
+    "U+0593": "SHALSHELET", // שלשלת
+};
+
+export const TAAM_TO_AMT_GLYPH_KEY: Record<Taam, AmtGlyphKey | null> = {
+    // --- מלכים ---
+    SILLUQ: "METEG",        // סילוק מזוהה קונטקסטואלית (סוף פסוק), בנוסף למתג
+    ATNACH: "ATNACH",
+    OLEH_VEYORED: "YORED",
+
+    // --- מפסיקים ---
+    PAZER: "PAZER",
+
+    REVIa: "REVIa",
+    REVIa_MUGRASH: "REVIa",
+    REVIa_QATAN: "REVIa",
+    REVIa_GADOL: "REVIa",
+
+    TSINOR: "TSINOR",
+    TSINORIT: "TSINOR",
+
+    DCHI: "DCHI",
+
+    // --- לגרמיה ---
+    MAHAPAKH_LEGARMEH: "MAHAPAKH",
+    AZLA_LEGARMEH: "QADMA",
+
+    // --- משרתים ---
+    QADMA: "QADMA",
+    MAHAPAKH: "MAHAPAKH",
+    MERCHA: "YORED",
+    MUNACH: "MUNACH",
+    TIPCHA: "TIPCHA",
+    ILUY: "ILUY",
+    GALGAL: "GALGAL",
+
+    // --- שלשלת ---
+    SHALSHELET_GEDOLA: "SHALSHELET",
+    SHALSHELET_KETANA: "SHALSHELET",
+
+    // --- fallback ---
+    UNKNOWN: null,
 };

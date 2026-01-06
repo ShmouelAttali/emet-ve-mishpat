@@ -1,4 +1,4 @@
-import type { TokenStep2Enriched } from "../buildRoleLayers";
+import type { TokenStep2Enriched } from "../types";
 import { TAAM_META } from "../../model/taam";
 import { INFERRED_CODE_REASON, type Inference } from "../../model/inferred";
 

@@ -1,7 +1,14 @@
+// lib/taamim/phonology/syllables.ts  (או איפה שנוח לך)
 import type { TokenGlyph, Mark } from "../text/tokenize";
+import type { Taam } from "../taamim/model/taam";
+import { GLYPH_TO_KEY, TAAM_TO_AMT_GLYPH_KEY, type AmtGlyphKey } from "../taamim/amtRegistry";
+
+// ---------------------------
+// Vowel detection (nuclei)
+// ---------------------------
 
 // Rough vowel marks that indicate a syllable nucleus.
-// (This is "good enough" for your rule-of-thumb; we can refine later.)
+// Keep this conservative; refine later if needed.
 const VOWEL_US = new Set([
     "U+05B0", // sheva
     "U+05B1", // hataf segol
@@ -14,37 +21,119 @@ const VOWEL_US = new Set([
     "U+05B8", // qamats
     "U+05B9", // holam
     "U+05BB", // qubuts
-    "U+05BC", // dagesh/mappiq (not vowel, but often accompanies; keep OUT)
+    // NOTE: U+05BC dagesh/mappiq is NOT a vowel nucleus
     "U+05C7", // qamats qatan
 ]);
 
-const METEG_U = "U+05BD";
-
 function marksForLetter(token: TokenGlyph, letterIndex: number): Mark[] {
-    const c = token.clusters[letterIndex];
-    return c ? c.marks : [];
+    return token.clusters[letterIndex]?.marks ?? [];
 }
 
-function hasVowel(marks: Mark[]): boolean {
+function hasVowelNucleus(marks: Mark[]): boolean {
     return marks.some((m) => m.kind === "NIQQUD" && VOWEL_US.has(m.u));
 }
 
-export function findMetegLetterIndex(token: TokenGlyph): number | null {
+// ---------------------------
+// Glyph lookup helpers
+// ---------------------------
+
+/**
+ * Builds the inverse mapping: AmtGlyphKey -> U+XXXX
+ * based on GLYPH_TO_KEY.
+ */
+const KEY_TO_GLYPH_U: Record<AmtGlyphKey, string> = (() => {
+    const out = {} as Record<AmtGlyphKey, string>;
+    for (const [u, key] of Object.entries(GLYPH_TO_KEY)) {
+        if (!out[key]) out[key] = u;
+    }
+    return out;
+})();
+
+/**
+ * Finds the letterIndex (cluster index) of a glyph key inside a token.
+ * Works for both TAAM and NIQQUD because it matches by m.u only.
+ */
+export function findLetterIndexOfGlyphKey(token: TokenGlyph, key: AmtGlyphKey): number | null {
+    const u = KEY_TO_GLYPH_U[key];
+    if (!u) return null;
+
     for (let i = 0; i < token.clusters.length; i++) {
         const marks = marksForLetter(token, i);
-        if (marks.some((m) => m.kind === "NIQQUD" && m.u === METEG_U)) return i;
+        if (marks.some((m) => m.u === u)) return i;
     }
     return null;
 }
 
-export function syllablesFromSilluqToEnd(token: TokenGlyph): number | null {
-    const sIdx = findMetegLetterIndex(token);
-    if (sIdx == null) return null;
+/**
+ * For a given Taam, finds the chosen glyph (via TAAM_TO_AMT_GLYPH_KEY) and returns its letterIndex.
+ * Example: SILLUQ -> METEG -> finds meteg letter index.
+ */
+export function findLetterIndexForTaamAnchor(token: TokenGlyph, taam: Taam): number | null {
+    const key = TAAM_TO_AMT_GLYPH_KEY[taam];
+    if (!key) return null;
+    return findLetterIndexOfGlyphKey(token, key);
+}
+
+// ---------------------------
+// Syllable counting
+// ---------------------------
+
+/**
+ * Counts syllable nuclei between two letter indices (inclusive).
+ * Returns null if indices are invalid/out of bounds.
+ *
+ * Rule-of-thumb behavior: if there are 0 vowel nuclei in the range,
+ * returns 1 (at least one syllable).
+ */
+export function countSyllablesInRange(
+    token: TokenGlyph,
+    fromLetterIndex: number,
+    toLetterIndexInclusive: number
+): number | null {
+    const n = token.clusters.length;
+    if (n === 0) return null;
+
+    if (
+        fromLetterIndex < 0 ||
+        toLetterIndexInclusive < 0 ||
+        fromLetterIndex >= n ||
+        toLetterIndexInclusive >= n
+    ) {
+        return null;
+    }
+
+    const from = Math.min(fromLetterIndex, toLetterIndexInclusive);
+    const to = Math.max(fromLetterIndex, toLetterIndexInclusive);
 
     let count = 0;
-    for (let i = sIdx; i < token.clusters.length; i++) {
-        if (hasVowel(marksForLetter(token, i))) count += 1;
+    for (let i = from; i <= to; i++) {
+        if (hasVowelNucleus(marksForLetter(token, i))) count += 1;
     }
-    if (count === 0) count = 1;
-    return count;
+
+    // If we found no vowel marks, treat it as one syllable word/segment.
+    return count === 0 ? 1 : count;
+}
+
+/**
+ * Main API you asked for:
+ * Count syllables from START OF WORD up to the chosen anchor glyph of a Taam.
+ *
+ * Examples:
+ * - SILLUQ -> METEG anchor -> counts syllables from start to meteg letter.
+ * - ATNACH -> ATNACH glyph -> counts syllables from start to that letter.
+ */
+export function countSyllablesFromStartToTaamAnchor(token: TokenGlyph, taam: Taam): number | null {
+    const anchorIdx = findLetterIndexForTaamAnchor(token, taam);
+    if (anchorIdx == null) return null;
+    return countSyllablesInRange(token, 0, anchorIdx);
+}
+
+/**
+ * Convenience: count syllables from start to a glyph key directly (no Taam).
+ * Useful for special cases (like METEG without calling it SILLUQ).
+ */
+export function countSyllablesFromStartToGlyphKey(token: TokenGlyph, key: AmtGlyphKey): number | null {
+    const anchorIdx = findLetterIndexOfGlyphKey(token, key);
+    if (anchorIdx == null) return null;
+    return countSyllablesInRange(token, 0, anchorIdx);
 }

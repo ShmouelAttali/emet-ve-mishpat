@@ -1,8 +1,8 @@
 import type { TokenGlyph } from "@/lib/text/tokenize";
-import type { TokenStep2 } from "../../step2Local";
-import type { Inference } from "../../model/inferred";
-import { syllablesFromSilluqToEnd } from "../../syllables";
+import type { TokenStep2 } from "@/lib/taamim/step2Local";
+import type { Inference } from "@/lib/taamim/model/inferred";
 import {hasKnown} from "@/lib/taamim/roles/infer/inferUtils";
+import {countSyllablesFromStartToTaamAnchor} from "@/lib/taamim/syllables";
 
 function hasMesharet(step2Tok: TokenStep2 | undefined) {
     return !!step2Tok?.identified.some((x) => x.kind === "KNOWN" && x.role === "mesharet");
@@ -52,7 +52,7 @@ export function inferReviaMugrashAfterAtnach(opts: {
 
     // 2) hidden rule near silluq:
     // "masharet in the word adjacent to silluq" + "<3 syllables to end"
-    const syll = syllablesFromSilluqToEnd(tokens[silluqIndex]);
+    const syll = countSyllablesFromStartToTaamAnchor(tokens[silluqIndex], "SILLUQ");
     if (syll != null && syll < 3) {
         const candidate = silluqIndex - 1;
         if (candidate >= domainFrom && candidate <= domainToInclusive) {

@@ -1,4 +1,4 @@
-import { AnalyzeResult } from "../types";
+import {AnalyzeResult} from "../types";
 
 export function SelectedTokenPanel({
                                        result,
@@ -8,10 +8,10 @@ export function SelectedTokenPanel({
     sourceIndex: number;
 }) {
     const token = result.tokens[sourceIndex];
-    const s2 = result.step3.tokens.find((x) => x.tokenId === token.id) ?? null;
+    const s2 = result.taamim.find((x) => x.tokenId === token.id) ?? null;
 
     // Step3 effective (אם קיים)
-    const s3 = result.step3?.tokens?.find?.((x: any) => x.tokenId === token.id) ?? null;
+    const s3 = result.taamim?.find?.((x: any) => x.tokenId === token.id) ?? null;
     const effective = s3?.effective ?? null;
 
     const step2Known =
@@ -43,45 +43,32 @@ export function SelectedTokenPanel({
                 unicodeBidi: "plaintext",
             }}
         >
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline" }}>
-                <div style={{ fontSize: 22 }}>{token.raw}</div>
+            <div style={{display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline"}}>
+                <div style={{fontSize: 22}}>{token.raw}</div>
 
                 {/* technical ids should be LTR */}
-                <div style={{ fontSize: 12, opacity: 0.7, direction: "ltr" }}>
+                <div style={{fontSize: 12, opacity: 0.7, direction: "ltr"}}>
                     sourceIndex #{sourceIndex} • tokenId {token.id}
                 </div>
             </div>
 
-            <div style={{ marginTop: 10 }}>
-                <b>Step 3 effective (התוצאה “האמיתית”):</b>{" "}
-                {effective ? (
-                    <>
-                        <span>{effective.hebName}</span>{" "}
-                        <span style={{ opacity: 0.75 }}>({effective.role === "mafsik" ? "מפסיק" : "משרת"})</span>
-                        {effective.reason ? (
-                            <div style={{ marginTop: 6, opacity: 0.8 }}>{effective.reason}</div>
-                        ) : null}
-                    </>
-                ) : (
-                    <span style={{ opacity: 0.75 }}>
-            — (אין פלט perToken מ־Step3 כרגע. אם תוסיף ב־buildRoleLayers, כאן יופיע “אתנח נסתר” וכו׳)
-          </span>
-                )}
+            <div style={{marginTop: 10}}>
+                <b>הסימנים שעל המילה:</b> {taamMarks || "—"}
             </div>
 
-            <div style={{ marginTop: 10 }}>
-                <b>Step 2 identified (תו במילה):</b>{" "}
-                <span style={{ opacity: 0.85 }}>{step2Known.length ? "" : "—"}</span>
+            <div style={{marginTop: 10}}>
+                <b>הטעם שזוהה (תו במילה):</b>{" "}
+                <span style={{opacity: 0.85}}>{step2Known.length ? "" : "—"}</span>
                 {step2Known.length ? (
-                    <ul style={{ margin: "8px 0 0", paddingInlineStart: 18 }}>
+                    <ul style={{margin: "8px 0 0", paddingInlineStart: 18}}>
                         {s2!.identified.map((x, idx) =>
                             x.kind === "KNOWN" ? (
                                 <li key={x.key + idx}>
-                                    {x.hebName} <span style={{ opacity: 0.75 }}>({x.key}, {x.role})</span>
+                                    {x.hebName} <span style={{opacity: 0.75}}>({x.key}, {x.role})</span>
                                 </li>
                             ) : (
                                 <li key={x.u + idx}>
-                                    UNKNOWN <span style={{ opacity: 0.75 }}>({x.u})</span>
+                                    UNKNOWN <span style={{opacity: 0.75}}>({x.u})</span>
                                 </li>
                             )
                         )}
@@ -89,11 +76,28 @@ export function SelectedTokenPanel({
                 ) : null}
             </div>
 
-            <div style={{ marginTop: 10 }}>
-                <b>סיווג “משרת/מפסיק” לפי Step2:</b> {step2RoleText}
+            <div style={{marginTop: 10}}>
+                <b>סיווג “משרת/מפסיק”:</b> {step2RoleText}
             </div>
 
-            <div style={{ marginTop: 10 }}>
+            <div style={{marginTop: 10}}>
+                <b>תפקיד הטעם:</b>{" "}
+                {effective ? (
+                    <>
+                        <span>{effective.hebName}</span>{" "}
+                        <span style={{opacity: 0.75}}>({effective.role === "mafsik" ? "מפסיק" : "משרת"})</span>
+                        {effective.reason ? (
+                            <div style={{marginTop: 6, opacity: 0.8}}>{effective.reason}</div>
+                        ) : null}
+                    </>
+                ) : (
+                    <span style={{opacity: 0.75}}>
+            — (אין פלט perToken מ־Step3 כרגע. אם תוסיף ב־buildRoleLayers, כאן יופיע “אתנח נסתר” וכו׳)
+          </span>
+                )}
+            </div>
+
+            <div style={{marginTop: 10}}>
                 <b>Observed:</b>{" "}
                 {s2
                     ? [
@@ -103,14 +107,6 @@ export function SelectedTokenPanel({
                     .filter(Boolean)
                     .join(" | ") || "—"
                     : "—"}
-            </div>
-
-            <div style={{ marginTop: 10 }}>
-                <b>Step 1 marks (TAAM):</b> {taamMarks || "—"}
-            </div>
-
-            <div style={{ marginTop: 10, fontSize: 12, opacity: 0.75 }}>
-                הערה: Step2 = “איזה תו יש במילה”; Step3 effective = “מה הטעם בפועל אחרי הכללים (כולל אתנח נסתר וכו׳)”.
             </div>
         </div>
     );

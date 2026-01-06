@@ -16,6 +16,9 @@ export type InferredCode =
     | "REVIa_MUGRASH_EXPLICIT"
     | "REVIa_MUGRASH_SUB_SHALSHELET_GEDOLA"
     | "REVIa_MUGRASH_HIDDEN_NEAR_SILLUQ"
+    | "DCHI_EXPLICIT"
+    | "DCHI_MAHAPACH_LEGARMEH"
+    | "DCHI_HIDDEN_NEAR_ATNACH_SHORT"
     ;
 
 export type Inference = {
@@ -25,6 +28,9 @@ export type Inference = {
 };
 
 export const INFERRED_CODE_REASON: Record<InferredCode, string> = {
+    DCHI_EXPLICIT: "דחי מפורש",
+    DCHI_HIDDEN_NEAR_ATNACH_SHORT: "דחי נסתר: פחות מ-3 הברות עד האתנח → המשרת האחרון לפני האתנח",
+    DCHI_MAHAPACH_LEGARMEH: "מהפך לגרמיה במקום דחי - שולט על תיבתו (צריך אישור)",
     REVIa_MUGRASH_EXPLICIT: "רביע מוגרש מפורש",
     REVIa_MUGRASH_HIDDEN_NEAR_SILLUQ: "רביע מוגרש נסתר: פחות מ-3 הברות עד סילוק → המשרת האחרון לפני הסילוק",
     REVIa_MUGRASH_SUB_SHALSHELET_GEDOLA: "שלשלת גדולה במקום רביע מוגרש בעקבות מהפך לגרמיה שהפך למשרת לפני הסילוק",

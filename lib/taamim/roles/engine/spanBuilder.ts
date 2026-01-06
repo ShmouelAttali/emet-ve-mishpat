@@ -1,4 +1,4 @@
-import type { Span } from "../buildRoleLayers";
+import type { Span } from "../types";
 
 export function buildSpansToAnchors(opts: {
     layer: 1 | 2 | 3 | 4;
