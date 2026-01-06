@@ -87,7 +87,7 @@ export function TokensRow({
                             {t.raw}
                         </div>
 
-                        <div style={{ fontSize: 11, opacity: 0.75, marginTop: 8, display: "flex", justifyContent: "space-between", gap: 6 }}>
+                        <div style={{ fontSize: 11, opacity: 0.75, marginTop: 8}}>
                             <span>{`${hebName} (${roleLabel})`}</span>
                         </div>
 
