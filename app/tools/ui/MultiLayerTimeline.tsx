@@ -54,7 +54,7 @@ export function MultiLayerTimeline({
 
     // Helpers כדי לא לשכפל לוגיקה בכל Layer
     const makeHoverHandler = React.useCallback(
-        () => (s: Span | null) => {
+        (layerName: string) => (s: Span | null) => {
             // אם יש pin, לא משנים highlight ב-hover
             if (pinnedSpan) return;
             setHoveredSpan(s);
@@ -63,7 +63,7 @@ export function MultiLayerTimeline({
     );
 
     const makeTogglePinHandler = React.useCallback(
-        () => (s: Span) => {
+        (layerName: string) => (s: Span) => {
             setPinnedSpan((prev) => (prev?.id === s.id ? null : s));
             setHoveredSpan(null);
         },
