@@ -36,7 +36,6 @@ export function inferMahapakhLegarmehAfterAtnachViceroy(input: ViceroyRuleInput)
 
     // We apply these rules only in the SILLUQ king-domain (domain ends at the silluq word).
     if (!leader || !leader.isAfterAtnach) return [];
-    console.log('entering inferMahapakhLegarmehAfterAtnachViceroy ', scope)
 
     const silluqIdx = scope.to;
     // Identify the ATNACH inside this silluq-domain, then restrict to "after atnach".

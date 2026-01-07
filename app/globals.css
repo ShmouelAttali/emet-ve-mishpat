@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
+    --layer-border-width: 1px;
+    --layer-opacity: 0.5;
+    --layer-height: 28px;
+    --font-biblical: serif;
+    --font-ui: system-ui;
+}
+
+/* זה הטקסט המקראי (תהלים/מקרא/טעמים) */
+.biblical {
+    font-family: var(--font-biblical), serif;
+    font-feature-settings: "mark" 1, "mkmk" 1;
+    font-size: 1.25rem;
+    line-height: 2.3; /* חשוב לטעמים */
+    letter-spacing: 0.01em;
+    white-space: pre-wrap; /* אם אתה שומר שורות */
+
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-ui), system-ui, Arial, sans-serif;
 }

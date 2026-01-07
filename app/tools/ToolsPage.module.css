@@ -1,0 +1,86 @@
+.main {
+    padding: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.card {
+    background: #fff;
+    color: #000;
+    border-radius: 16px;
+    padding: 18px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+}
+
+.title {
+    margin: 0;
+    font-size: 22px;
+}
+
+.textareaWrap {
+    margin-top: 12px;
+}
+
+.textarea {
+    width: 100%;
+    font-size: 24px;
+    direction: rtl;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    outline: none;
+
+    /* מבוקש: פונט מקראי */
+    font-family: var(--font-biblical), serif;
+    line-height: 2.1;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.runBtn {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 120ms ease, transform 120ms ease, opacity 120ms ease;
+}
+
+.runBtn:disabled {
+    cursor: default;
+    opacity: 0.85;
+}
+
+.runBtnIdle {
+    background: #000;
+    color: #fff;
+}
+
+.runBtnLoading {
+    background: rgba(0, 0, 0, 0.06);
+    color: #000;
+}
+
+.sectionTitle {
+    margin-top: 18px;
+    font-size: 16px;
+}
+
+.panel {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.hint {
+    opacity: 0.7;
+    direction: rtl;
+    text-align: right;
+}

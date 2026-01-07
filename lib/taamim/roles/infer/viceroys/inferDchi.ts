@@ -1,7 +1,7 @@
-import type { Inference } from "@/lib/taamim/model/inferred";
-import { isTaken } from "@/lib/taamim/roles/engine/taken";
-import { hasKnown } from "@/lib/taamim/roles/infer/inferUtils";
-import type { ViceroyRuleInput } from "./types";
+import type {Inference} from "@/lib/taamim/model/inferred";
+import {isTaken} from "@/lib/taamim/roles/engine/taken";
+import {hasKnown} from "@/lib/taamim/roles/infer/inferUtils";
+import type {ViceroyRuleInput} from "./types";
 import {countSyllablesFromStartToTaamAnchor} from "@/lib/taamim/syllables";
 
 function hasAnyMesharet(step2Tok: any): boolean {
@@ -19,7 +19,7 @@ function findLastMesharetBeforeIndex(input: ViceroyRuleInput, idxExclusive: numb
 }
 
 export function inferDchiViceroy(input: ViceroyRuleInput): Inference[] {
-    const { tokens, step2, taken, scope, leader } = input;
+    const {tokens, step2, taken, scope, leader} = input;
 
     // DCHI is a viceroy under ATNACH king-domain.
     // We treat "ATNACH domain" as a domain that ends exactly at the atnach king index.
@@ -35,7 +35,7 @@ export function inferDchiViceroy(input: ViceroyRuleInput): Inference[] {
         if (isTaken(taken, i)) continue;
 
         if (hasKnown(step2[i], "DCHI")) {
-            out.push({ index: i, inferredCode: "DCHI_EXPLICIT", effectiveTaam: "DCHI" });
+            out.push({index: i, inferredCode: "DCHI_EXPLICIT", effectiveTaam: "DCHI"});
             return out; // explicit wins, stop
         }
     }

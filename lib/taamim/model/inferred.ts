@@ -12,6 +12,8 @@ export type InferredCode =
     // OLEH_VEYORED
     | "OLEH_VEYORED_EXPLICIT"
     | "OLEH_VEYORED_SUB_AZLA_LEGARMEH_FIRST"
+    | "OLEH_VEYORED_SUB_MERCHA_WITH_OLE_PREV"
+    | "OLEH_VEYORED_SUB_MERCHA_NO_ROOM_FOR_OLE_PREV"
 
     | "REVIa_MUGRASH_EXPLICIT"
     | "REVIa_MUGRASH_SUB_SHALSHELET_GEDOLA"
@@ -31,6 +33,8 @@ export type Inference = {
 };
 
 export const INFERRED_CODE_REASON: Record<InferredCode, string> = {
+    OLEH_VEYORED_SUB_MERCHA_NO_ROOM_FOR_OLE_PREV: "מירכא במילה קצרה ללא מקום במילה שלפניה לסימון 'עולה'",
+    OLEH_VEYORED_SUB_MERCHA_WITH_OLE_PREV: "מירכא במילה קצרה עם סימון 'עולה' במילה שלפניה",
     MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_BY_REVIa_MUGRASH_IN_DOMAIN: "מהפך לגרמיה בתחום שלאחר האתנח",
     MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_WHEN_SHALSHELET_GEDOLA_PRESENT: "מהפך לגרמיה נסתר - הומר במשרת כי היה פחות מ-3 הברות עד הסילוק",
     DCHI_EXPLICIT: "דחי מפורש",

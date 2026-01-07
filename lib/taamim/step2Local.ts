@@ -163,32 +163,29 @@ function firstIdentifiedTaam(
         });
     }
 
-    // 11) YORED: U+05A5 => OLEH_VEYORED if OLE exists on same token or previous token, else MERCHA
+    // 11) YORED: U+05A5
+// STEP2 מזהה OLEH_VEYORED רק אם גם OLE וגם YORED על אותה מילה.
+// אחרת YORED הוא תמיד MERCHA.
+// (אין יותר הסתכלות על המילה הקודמת בשלב הזה)
     const hasYored = hasKey(cur, "YORED");
     if (hasYored) {
         const hasOleSame = hasTaamU(cur, "U+05AB"); // OLE glyph on same token
 
-        const hasOlePrev =
-            !!prev &&
-            !prev.isPasek &&
-            !prev.isSofPasuq &&
-            hasTaamU(prev, "U+05AB"); // חשוב: לבדוק glyph בפועל, לא key (כי אצלך OLE לא תמיד "KNOWN")
-
-        if (hasOleSame || hasOlePrev) {
-            // אם ה-OLE נמצא בטוקן הקודם, זה "נצרך" לשילוב, אבל אין לנו מערכים כבר.
-            // אז פשוט מזהים OLEH_VEYORED פה, ולגבי prev – נטפל בהסרה של UNKNOWN OLE בהמשך (ראה סעיף 3).
-            const consumed = ["U+05A5"];
-            if (hasOleSame) consumed.push("U+05AB"); // אם ה-OLE על אותו טוקן – נצרך גם הוא
-
+        if (hasOleSame) {
             return add({
                 key: "OLEH_VEYORED",
                 hebName: "עולה ויורד",
                 role: "mafsik",
-                consumedU: consumed,
+                consumedU: ["U+05A5", "U+05AB"],
             });
         }
 
-        return add({key: "MERCHA", hebName: "מירכא", role: "mesharet", consumedU: ["U+05A5"]});
+        return add({
+            key: "MERCHA",
+            hebName: "מירכא",
+            role: "mesharet",
+            consumedU: ["U+05A5"],
+        });
     }
 
     // 12) TIPCHA

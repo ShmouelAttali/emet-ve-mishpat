@@ -1,0 +1,87 @@
+.row {
+    display: grid;
+    gap: 8px;
+}
+
+.span {
+    grid-row: 1;
+    grid-auto-flow: row;
+    border-radius: 14px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    min-width: 0;
+
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+
+    /* משתמשים ב-CSS variables שהקומפוננטה תספק */
+    border: var(--layer-border-width) solid rgba(0, 0, 0, var(--layer-opacity));
+    background: rgba(0, 0, 0, calc(0.02 + 0.03 * var(--layer-opacity)));
+    height: var(--layer-height);
+}
+
+.pinned {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.notPinned {
+    transform: translateY(0px);
+    box-shadow: none;
+}
+
+.name {
+    font-size: 12px;
+    font-weight: 700;
+    direction: rtl;
+    unicode-bidi: plaintext;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    /* כבר אמרתי קודם — זה קריטי */
+    min-width: 0;
+
+    /* אופציונלי: לאפשר לו להצטמצם */
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.cause {
+    font-size: 11px;
+    opacity: 0.65;
+    direction: rtl;
+    unicode-bidi: plaintext;
+
+    /* ellipsis ל-cause */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    /* קריטי ב-flex */
+    min-width: 0;
+}
+
+.pinBadge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.7);
+    opacity: 0.9;
+    flex-shrink: 0;
+}

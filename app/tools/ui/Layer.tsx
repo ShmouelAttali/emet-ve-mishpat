@@ -1,12 +1,10 @@
-import {Span} from "../types";
-import {spanToDisplayRange} from "./displayModel";
+import { Span } from "../types";
+import { spanToDisplayRange } from "./displayModel";
+import styles from "./Layer.module.css";
+import {rtlRangeToGridColumns} from "@/app/tools/ui/rtlGrid";
 
-function toRtlColumns(n: number, from: number, to: number) {
-    const vf = n - 1 - from;
-    const vt = n - 1 - to;
-    const start = Math.min(vf, vt);
-    const end = Math.max(vf, vt);
-    return {colStart: start + 1, colEnd: end + 2};
+function cx(...parts: Array<string | false | null | undefined>) {
+    return parts.filter(Boolean).join(" ");
 }
 
 export function Layer({
@@ -33,12 +31,17 @@ export function Layer({
     const gridCols = `repeat(${n}, minmax(72px, 1fr))`;
 
     return (
-        <div style={{display: "grid", gridTemplateColumns: gridCols, gap: 8}}>
+        <div className={styles.row} style={{ gridTemplateColumns: gridCols }}>
             {spans.map((s) => {
                 const range = spanToDisplayRange(s, sourceToDisplay);
                 if (!range) return null;
 
-                const {colStart, colEnd} = toRtlColumns(n, range.from, range.to);
+                const { colStart, colEnd } = rtlRangeToGridColumns(
+                    n,
+                    range.from,
+                    range.to
+                );
+
                 const isPinned = pinnedSpanId === s.id;
 
                 return (
@@ -48,58 +51,32 @@ export function Layer({
                         onMouseLeave={() => onHoverSpan?.(null)}
                         onClick={() => onTogglePin?.(s)}
                         role="button"
-                        style={{
-                            gridColumn: `${colStart} / ${colEnd}`,
-                            gridRow: 1,
-                            gridAutoFlow: "row",
-                            height,
-                            border: `${borderWidth}px solid rgba(0,0,0,${opacity})`,
-                            borderRadius: 14,
-                            padding: "6px 10px",
-                            background: `rgba(0,0,0,${0.02 + 0.03 * opacity})`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            gap: 10,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            cursor: "pointer",
-                            userSelect: "none",
-                            transition: "transform 120ms ease, box-shadow 120ms ease, background 120ms ease",
-                            transform: isPinned ? "translateY(-1px)" : "translateY(0px)",
-                            boxShadow: isPinned ? "0 10px 24px rgba(0,0,0,0.12)" : "none",
-                        }}
+                        className={cx(
+                            styles.span,
+                            isPinned ? styles.pinned : styles.notPinned
+                        )}
+                        style={
+                            {
+                                gridColumn: `${colStart} / ${colEnd}`, // דינמי
+                                "--layer-height": `${height}px`,
+                                "--layer-border-width": `${borderWidth}px`,
+                                "--layer-opacity": String(opacity),
+                            } as React.CSSProperties
+                        }
                         title={`${s.name} (${s.from}–${s.to})${
                             s.causedBy ? ` | ${s.causedBy.label}#${s.causedBy.tokenIndex}` : ""
                         }`}
                     >
-            <span style={{fontSize: 12, fontWeight: 700, direction: "rtl", unicodeBidi: "plaintext"}}>
-              {s.name}
-            </span>
+                        <span className={styles.name}>{s.name}</span>
 
-                        <span style={{display: "flex", alignItems: "center", gap: 8, minWidth: 0}}>
+                        <span className={styles.right}>
               {s.causedBy && (
-                  <span style={{fontSize: 11, opacity: 0.65, direction: "rtl", unicodeBidi: "plaintext"}}>
+                  <span className={styles.cause}>
                   ← {s.causedBy.label}#{s.causedBy.tokenIndex}
                 </span>
               )}
 
-                            {/* "Pin" badge קטן שמבהיר שהקליק נועל */}
-                            {isPinned && (
-                                <span
-                                    style={{
-                                        fontSize: 10,
-                                        padding: "2px 6px",
-                                        borderRadius: 999,
-                                        border: "1px solid rgba(0,0,0,0.25)",
-                                        background: "rgba(255,255,255,0.7)",
-                                        opacity: 0.9,
-                                        flexShrink: 0,
-                                    }}
-                                >
-                  PIN
-                </span>
-                            )}
+                            {isPinned && <span className={styles.pinBadge}>PIN</span>}
             </span>
                     </div>
                 );

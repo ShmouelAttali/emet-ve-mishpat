@@ -1,0 +1,20 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    outline: none;
+}
+
+/* מפריד דק בין שכבות לטוקנים */
+.divider {
+    height: 2px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 999px;
+}
+
+/* אזור debug */
+.debug {
+    font-size: 12px;
+    opacity: 0.75;
+    color: #111;
+}

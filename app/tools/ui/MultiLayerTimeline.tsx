@@ -4,6 +4,7 @@ import { buildDisplayTokens } from "./displayModel";
 import { Layer } from "./Layer";
 import { TokensRow } from "./TokensRow";
 import { TokenStep2Enriched } from "@/lib/taamim/roles/types";
+import styles from "./MultiLayerTimeline.module.css";
 
 /**
  * MultiLayerTimeline
@@ -43,18 +44,13 @@ export function MultiLayerTimeline({
     }, [activeSpan]);
 
     // Esc מבטל pin
-    const onKeyDown = React.useCallback(
-        (e: React.KeyboardEvent<HTMLDivElement>) => {
-            if (e.key === "Escape") {
-                setPinnedSpan(null);
-            }
-        },
-        []
-    );
+    const onKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "Escape") setPinnedSpan(null);
+    }, []);
 
     // Helpers כדי לא לשכפל לוגיקה בכל Layer
     const makeHoverHandler = React.useCallback(
-        (layerName: string) => (s: Span | null) => {
+        (_layerName: string) => (s: Span | null) => {
             // אם יש pin, לא משנים highlight ב-hover
             if (pinnedSpan) return;
             setHoveredSpan(s);
@@ -63,7 +59,7 @@ export function MultiLayerTimeline({
     );
 
     const makeTogglePinHandler = React.useCallback(
-        (layerName: string) => (s: Span) => {
+        (_layerName: string) => (s: Span) => {
             setPinnedSpan((prev) => (prev?.id === s.id ? null : s));
             setHoveredSpan(null);
         },
@@ -71,11 +67,7 @@ export function MultiLayerTimeline({
     );
 
     return (
-        <div
-            tabIndex={0}
-            onKeyDown={onKeyDown}
-            style={{ display: "flex", flexDirection: "column", gap: 10, outline: "none" }}
-        >
+        <div tabIndex={0} onKeyDown={onKeyDown} className={styles.root}>
             <Layer
                 n={n}
                 spans={layers.emperor}
@@ -124,7 +116,7 @@ export function MultiLayerTimeline({
                 onTogglePin={makeTogglePinHandler("thirds")}
             />
 
-            <div style={{ height: 2, background: "rgba(0,0,0,0.10)", borderRadius: 999 }} />
+            <div className={styles.divider} />
 
             <TokensRow
                 tokens={displayTokens}
@@ -132,11 +124,13 @@ export function MultiLayerTimeline({
                 onSelect={onSelectSourceIndex}
                 taamim={taamim}
                 highlightedSourceIndexes={highlightedSourceIndexes}
-                hoveredLabel={activeSpan ? `${pinnedSpan ? "PIN" : "HOVER"} • ${activeSpan.name}` : undefined}
+                hoveredLabel={
+                    activeSpan ? `${pinnedSpan ? "PIN" : "HOVER"} • ${activeSpan.name}` : undefined
+                }
             />
 
             {debug && (
-                <div style={{ fontSize: 12, opacity: 0.75, color: "#111" }}>
+                <div className={styles.debug}>
                     debug: silluqIndex={String(debug.silluqIndex)} • atnachRoleIndex={String(debug.atnachRoleIndex)}
                 </div>
             )}
