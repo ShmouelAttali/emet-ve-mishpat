@@ -27,7 +27,7 @@ function firstTwoWordIndices(tokens: TokenGlyph[], from: number, toInclusive: nu
     for (let i = from; i <= toInclusive; i++) {
         const t = tokens[i];
         if (!t || isSkippable(t)) continue;
-        if (_first == null) first = i;
+        if (first == null) first = i;
         else {
             second = i;
             break;
