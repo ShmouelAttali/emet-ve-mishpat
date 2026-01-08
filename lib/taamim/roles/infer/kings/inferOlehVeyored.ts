@@ -98,25 +98,19 @@ export function inferOlehVeyored(opts: {
 
     // 3) חפש את המירכא הראשונה מה"מילה השניה" ועד סוף התחום
     if (w1 != null) {
-        console.log("w1", w1);
         for (let i = w1; i <= domainToInclusive; i++) {
             const tok = tokens[i];
             if (!tok || isSkippable(tok)) continue;
-            console.log('step2i', step2[i], tok)
             // חייב להיות מירכא (יורד) ב-step2 + לוודא שיש glyph של יורד בפועל
             if (!hasKnown(step2[i], "MERCHA")) continue;
             if (!hasTaamU(tok, YORED_U)) continue;
-            console.log('has yored in this word', tok)
             // תנאי "אין מקום לעולה" במילה של המירכא
             if (!noRoomForOleInThisWord(tok)) continue;
-            console.log('no room for ole in this word', tok)
             const p = prevWordIndex(tokens, domainFrom, i);
-            console.log('prev word index', p)
             if (p == null) continue;
 
             const prevTok = tokens[p]!;
             const oleOnPrev = hasTaamU(prevTok, OLE_U);
-            console.log('prev tok', prevTok)
             // 3a) אם יש עולה מפורש במילה הקודמת => עולה ויורד
             if (oleOnPrev) {
                 return {
@@ -129,10 +123,8 @@ export function inferOlehVeyored(opts: {
             // 3b) אין עולה מפורש במילה הקודמת.
             // אם יש במילה הקודמת "מקום לעולה" => לא מסיקים כאן (העולה היה אמור להופיע)
             if (hasRoomForOleInPrev(prevTok)) {
-                console.log('has room for ole in prev', prevTok)
                 continue;
             }
-            console.log('no room for ole in prev', prevTok)
             // 3c) אין מקום לעולה במילה הקודמת => עולה ויורד (העולה נעלם/נדחק)
             return {
                 index: i,

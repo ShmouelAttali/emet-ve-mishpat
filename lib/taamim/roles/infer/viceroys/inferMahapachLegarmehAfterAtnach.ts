@@ -60,7 +60,6 @@ export function inferMahapakhLegarmehAfterAtnachViceroy(input: ViceroyRuleInput)
             observedMahapakhLegarmehIdx = i;
         }
     }
-    console.log('hasReviaMugrash', hasReviaMugrashSomewhere, 'hasShalshelet', hasShalsheletGedolaSomewhere, observedMahapakhLegarmehIdx)
     // Rule guard:
     // "אין מצב של מהפך לגרמיה אחרי אתנח בלי רביע מוגרש לפניו בתחום"
     // => if no revia-mugrash-in-domain (including shalshelet gedola), do nothing.

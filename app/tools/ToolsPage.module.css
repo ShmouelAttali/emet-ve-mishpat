@@ -44,6 +44,7 @@
 }
 
 .runBtn {
+    width: 100px;
     padding: 10px 14px;
     border-radius: 12px;
     border: 1px solid rgba(0, 0, 0, 0.25);
@@ -83,4 +84,98 @@
     opacity: 0.7;
     direction: rtl;
     text-align: right;
+}
+
+
+/* ===== Psalms navbar (same visual language as tools) ===== */
+.navbar {
+    margin-top: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.02);
+
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.navGroup {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 110px;
+}
+
+.fieldLabel {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.select {
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: #fff;
+    color: #000;
+    outline: none;
+}
+
+.select:focus {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.navActions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* icon buttons – same as runBtn but square-ish */
+.iconBtn {
+    height: 42px;
+    width: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+    transition: background 120ms ease, transform 120ms ease, opacity 120ms ease;
+}
+
+.iconBtn:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.iconBtn:active {
+    transform: translateY(1px);
+}
+
+.iconBtn:disabled {
+    cursor: default;
+    opacity: 0.65;
+    transform: none;
+}
+
+/* verse box – match tools panel look but larger */
+.verseBox {
+    margin-top: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.verseMeta {
+    margin-top: 8px;
+    font-size: 12px;
+    opacity: 0.7;
 }
