@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { AnalyzeResult } from "../tools/types"; // עדכן אם צריך
-import { MultiLayerTimeline } from "../tools/ui/MultiLayerTimeline";
-import { SelectedTokenPanel } from "../tools/ui/SelectedTokenPanel";
-import { PsalmsNavBar } from "./PsalmsNavBar";
+import {useEffect, useState} from "react";
+import type {AnalyzeResult} from "../tools/types"; // עדכן אם צריך
+import {MultiLayerTimeline} from "../tools/ui/MultiLayerTimeline";
+import {SelectedTokenPanel} from "../tools/ui/SelectedTokenPanel";
+import {PsalmsNavBar} from "./PsalmsNavBar";
 import styles from "../tools/ToolsPage.module.css";
+import {toHebrewNumeral} from "@/lib/gematria";
 
 type ApiPsalmsResponse = {
     verse: { chapter: number; verse: number; text: string };
@@ -37,7 +38,7 @@ export default function PsalmsPage() {
 
     useEffect(() => {
         (async () => {
-            const res = await fetch("/api/analysis-versions", { cache: "no-store" });
+            const res = await fetch("/api/analysis-versions", {cache: "no-store"});
             if (!res.ok) throw new Error(await res.text());
             const rows: VersionsRow[] = await res.json();
             setVersions(rows);
@@ -97,11 +98,11 @@ export default function PsalmsPage() {
 
                 {verseText && (
                     <div className={styles.verseCard}>
-                        <div className="biblical" style={{ direction: "rtl", fontSize: 24, lineHeight: 2.2 }}>
+                        <div className="biblical" style={{direction: "rtl", fontSize: 24, lineHeight: 2.2}}>
                             {verseText}
                         </div>
                         <div className={styles.verseMeta}>
-                            תהלים {chapter}:{verse} · version: {version}
+                            תהלים פרק {toHebrewNumeral(chapter)} פסוק {toHebrewNumeral(verse)} · version: {version}
                         </div>
                     </div>
                 )}
@@ -131,7 +132,7 @@ export default function PsalmsPage() {
 
                         {selectedSourceIndex != null ? (
                             <div className={styles.panel}>
-                                <SelectedTokenPanel result={result} sourceIndex={selectedSourceIndex} />
+                                <SelectedTokenPanel result={result} sourceIndex={selectedSourceIndex}/>
                             </div>
                         ) : (
                             <div className={styles.hint}>לחץ על מילה למעלה כדי לראות פרטים.</div>

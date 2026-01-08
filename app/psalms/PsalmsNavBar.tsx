@@ -2,6 +2,7 @@
 
 import {useEffect, useMemo, useState} from "react";
 import styles from "../tools/ToolsPage.module.css";
+import {toHebrewNumeral} from "@/lib/gematria";
 
 type VersionsRow = {
     analysis_version: string;
@@ -70,18 +71,6 @@ export function PsalmsNavBar(props: {
         <div className={styles.navbar}>
             <div className={styles.navGroup}>
                 <label className={styles.field}>
-                    <div className={styles.fieldLabel}>פרק</div>
-                    <select className={styles.select} value={chapter}
-                            onChange={(e) => onChangeChapter(Number(e.target.value))}>
-                        {chapters.map((c) => (
-                            <option key={c} value={c}>
-                                {c}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-
-                <label className={styles.field}>
                     <div className={styles.fieldLabel}>פסוק</div>
                     <select className={styles.select}
                             value={verse}
@@ -90,12 +79,24 @@ export function PsalmsNavBar(props: {
                     >
                         {availableVerses.map((v) => (
                             <option key={v} value={v}>
-                                {v}
+                                {toHebrewNumeral(v)}
                             </option>
                         ))}
                     </select>
 
                     {versesErr && <div style={{fontSize: 12, marginTop: 6, color: "crimson"}}>{versesErr}</div>}
+                </label>
+
+                <label className={styles.field}>
+                    <div className={styles.fieldLabel}>פרק</div>
+                    <select className={styles.select} value={chapter}
+                            onChange={(e) => onChangeChapter(Number(e.target.value))}>
+                        {chapters.map((c) => (
+                            <option key={c} value={c}>
+                                {toHebrewNumeral(c)}
+                            </option>
+                        ))}
+                    </select>
                 </label>
             </div>
 
@@ -123,7 +124,8 @@ export function PsalmsNavBar(props: {
                 <button className={styles.iconBtn} onClick={prev} disabled={loading} title="פסוק קודם">
                     ▶
                 </button>
-                <button className={`${styles.runBtn} ${styles.runBtnIdle}`} onClick={onClickReload} disabled={loading} title="טען מחדש">
+                <button className={`${styles.runBtn} ${styles.runBtnIdle}`} onClick={onClickReload} disabled={loading}
+                        title="טען מחדש">
                     {loading ? "טוען…" : "טען"}
                 </button>
             </div>
