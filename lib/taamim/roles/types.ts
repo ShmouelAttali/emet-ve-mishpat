@@ -1,9 +1,10 @@
 import type { TokenStep2 } from "../step2Local";
 import type { Taam } from "../model/taam";
+import {InferredCode} from "@/lib/taamim/model/inferred";
 
 export type TokenEffective = {
     taam: Taam;
-    inferredCode: string;
+    inferredCode: InferredCode;
     hebName: string;
     role: "mesharet" | "mafsik";
     reason: string;

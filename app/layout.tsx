@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {Heebo} from "next/font/google";
 import "./globals.css";
 import localFont from "next/font/local";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 
 const sblHebrew = localFont({
@@ -29,7 +30,11 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="he" className={`${uiFont.variable} ${sblHebrew.variable}`}>
-        <body>{children}</body>
+        <body>
+        <Tooltip.Provider delayDuration={300}>
+            {children}
+        </Tooltip.Provider>
+        </body>
         </html>
     );
 }

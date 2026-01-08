@@ -1,14 +1,15 @@
+// app/psalms/page.tsx  (Server Component)
 import { Suspense } from "react";
 import PsalmsPageClient from "./PsalmsPageClient";
 
-export default function PsalmsPage({
-                                       searchParams,
-                                   }: {
-    searchParams?: Record<string, string | string[] | undefined>;
+export default async function PsalmsPage(props: {
+    searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
-    const chapter = Number(searchParams?.chapter ?? 1);
-    const verse = Number(searchParams?.verse ?? 1);
-    const version = typeof searchParams?.version === "string" ? searchParams?.version : "";
+    const sp = (await props.searchParams) ?? {};
+
+    const chapter = Number(sp.chapter ?? 1);
+    const verse = Number(sp.verse ?? 1);
+    const version = typeof sp.version === "string" ? sp.version : "";
 
     return (
         <Suspense fallback={null}>

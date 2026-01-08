@@ -1,0 +1,16 @@
+.tooltip {
+    background: #111;
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    white-space: pre-line;
+    direction: rtl;
+}
+
+.tooltip-arrow {
+    fill: #111;
+}
