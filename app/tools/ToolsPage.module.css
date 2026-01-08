@@ -165,6 +165,10 @@
     transform: none;
 }
 
+.loading{
+    width: 50px;
+}
+
 /* verse box – match tools panel look but larger */
 .verseBox {
     margin-top: 12px;

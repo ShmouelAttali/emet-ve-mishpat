@@ -20,7 +20,6 @@ export function PsalmsNavBar(props: {
     onChangeChapter: (c: number) => void;
     onChangeVerse: (v: number) => void;
     onChangeVersion: (v: string) => void;
-    onClickReload: () => void;
 }) {
     const {
         chapter,
@@ -31,7 +30,6 @@ export function PsalmsNavBar(props: {
         onChangeChapter,
         onChangeVerse,
         onChangeVersion,
-        onClickReload,
     } = props;
 
     const chapters = useMemo(() => Array.from({length: 150}, (_, i) => i + 1), []);
@@ -118,15 +116,12 @@ export function PsalmsNavBar(props: {
             </div>
 
             <div className={styles.navActions}>
+                <div className={styles.loading}>{loading ? "…טוען" : "       "}</div>
                 <button className={styles.iconBtn} onClick={next} disabled={loading} title="פסוק הבא">
                     ◀
                 </button>
                 <button className={styles.iconBtn} onClick={prev} disabled={loading} title="פסוק קודם">
                     ▶
-                </button>
-                <button className={`${styles.runBtn} ${styles.runBtnIdle}`} onClick={onClickReload} disabled={loading}
-                        title="טען מחדש">
-                    {loading ? "טוען…" : "טען"}
                 </button>
             </div>
         </div>

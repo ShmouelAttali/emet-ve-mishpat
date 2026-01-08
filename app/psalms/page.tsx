@@ -7,6 +7,7 @@ import {SelectedTokenPanel} from "../tools/ui/SelectedTokenPanel";
 import {PsalmsNavBar} from "./PsalmsNavBar";
 import styles from "../tools/ToolsPage.module.css";
 import {toHebrewNumeral} from "@/lib/gematria";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type ApiPsalmsResponse = {
     verse: { chapter: number; verse: number; text: string };
@@ -36,15 +37,68 @@ export default function PsalmsPage() {
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState<string | null>(null);
 
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    function pushUrl(next: { chapter?: number; verse?: number; version?: string }) {
+        const sp = new URLSearchParams(searchParams?.toString() ?? "");
+
+        if (next.chapter != null) sp.set("chapter", String(next.chapter));
+        if (next.verse != null) sp.set("verse", String(next.verse));
+        if (next.version != null) sp.set("version", next.version);
+
+        router.push(`${pathname}?${sp.toString()}`, { scroll: false });
+    }
+
+    function onChangeChapter(c: number) {
+        setChapter(c);
+        // נבחר בינתיים פסוק 1; ה-NavBar שלך כבר מתקן לפסוק ראשון זמין אחרי fetch
+        setVerse(1);
+        pushUrl({ chapter: c, verse: 1 });
+    }
+
+    function onChangeVerse(v: number) {
+        setVerse(v);
+        pushUrl({ verse: v });
+    }
+
+    function onChangeVersion(v: string) {
+        setVersion(v);
+        pushUrl({ version: v });
+    }
+
     useEffect(() => {
         (async () => {
-            const res = await fetch("/api/analysis-versions", {cache: "no-store"});
+            const res = await fetch("/api/analysis-versions", { cache: "no-store" });
             if (!res.ok) throw new Error(await res.text());
             const rows: VersionsRow[] = await res.json();
             setVersions(rows);
-            if (rows.length > 0) setVersion(rows[0].analysis_version);
+
+            const urlVersion = searchParams.get("version");
+            if (urlVersion) {
+                setVersion(urlVersion);
+                return;
+            }
+
+            if (rows.length > 0) {
+                setVersion(rows[0].analysis_version);
+                pushUrl({ version: rows[0].analysis_version });
+            }
         })().catch((e) => setErr(String(e)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const c = Number(searchParams.get("chapter") ?? 1);
+        const v = Number(searchParams.get("verse") ?? 1);
+        const ver = searchParams.get("version") ?? "";
+
+        if (Number.isFinite(c) && c >= 1 && c <= 150) setChapter(c);
+        if (Number.isFinite(v) && v >= 1) setVerse(v); // פסוקים משתנים, נבדוק זמינות בהמשך
+        if (ver) setVersion(ver);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // רק פעם אחת בטעינה
 
     async function load() {
         if (!version) return;
@@ -90,10 +144,9 @@ export default function PsalmsPage() {
                     version={version}
                     versions={versions}
                     loading={loading}
-                    onChangeChapter={setChapter}
-                    onChangeVerse={setVerse}
-                    onChangeVersion={setVersion}
-                    onClickReload={load}
+                    onChangeChapter={onChangeChapter}
+                    onChangeVerse={onChangeVerse}
+                    onChangeVersion={onChangeVersion}
                 />
 
                 {verseText && (
