@@ -1,5 +1,5 @@
-import { Span } from "../types";
-import { spanToDisplayRange } from "./displayModel";
+import {Span} from "../types";
+import {spanToDisplayRange} from "./displayModel";
 import styles from "./Layer.module.css";
 import {rtlRangeToGridColumns} from "@/app/tools/ui/rtlGrid";
 
@@ -17,6 +17,7 @@ export function Layer({
                           onHoverSpan,
                           pinnedSpanId,
                           onTogglePin,
+                          gridCols
                       }: {
     n: number;
     spans: Span[];
@@ -27,16 +28,16 @@ export function Layer({
     onHoverSpan?: (span: Span | null) => void;
     pinnedSpanId?: string | null;
     onTogglePin?: (span: Span) => void;
+    gridCols: string
 }) {
-    const gridCols = `repeat(${n}, minmax(72px, 1fr))`;
 
     return (
-        <div className={styles.row} style={{ gridTemplateColumns: gridCols }}>
+        <div className={styles.row} style={{gridTemplateColumns: gridCols}}>
             {spans.map((s) => {
                 const range = spanToDisplayRange(s, sourceToDisplay);
                 if (!range) return null;
 
-                const { colStart, colEnd } = rtlRangeToGridColumns(
+                const {colStart, colEnd} = rtlRangeToGridColumns(
                     n,
                     range.from,
                     range.to

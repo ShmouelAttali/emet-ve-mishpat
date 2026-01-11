@@ -1,6 +1,6 @@
 .row {
     display: grid;
-    gap: 8px;
+    gap: var(--gap, 8px);
 }
 
 .span {

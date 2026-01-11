@@ -8,15 +8,27 @@
     --surface-2: #f6f7f8;
     --surface-3: #eef1f4;
 
-    --border: rgba(0,0,0,0.12);
-    --muted: rgba(0,0,0,0.65);
-    --shadow: rgba(0,0,0,0.06);
+    --border: rgba(0, 0, 0, 0.12);
+    --muted: rgba(0, 0, 0, 0.65);
+    --shadow: rgba(0, 0, 0, 0.06);
 
     --accent: #315efb;
-    --accent-weak: rgba(49,94,251,0.14);
+    --accent-weak: rgba(49, 94, 251, 0.14);
 
-    --selected: rgba(0,0,0,0.08);
-    --hovered: rgba(0,0,0,0.05);
+    --selected: rgba(0, 0, 0, 0.08);
+    --hovered: rgba(0, 0, 0, 0.05);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
 }
 
 
@@ -44,32 +56,32 @@
         /* חדש */
         --surface: #111214;
         --surface-2: #16181b;
-        --border: rgba(255,255,255,0.14);
-        --muted: rgba(255,255,255,0.70);
-        --shadow: rgba(0,0,0,0.35);
+        --border: rgba(255, 255, 255, 0.14);
+        --muted: rgba(255, 255, 255, 0.70);
+        --shadow: rgba(0, 0, 0, 0.35);
     }
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: #0b0d10;   /* פחות שחור */
+        --background: #0b0d10; /* פחות שחור */
         --foreground: #e8eaed;
 
-        --surface: #11151a;      /* card */
-        --surface-2: #171c22;    /* toolbar / panel bg */
-        --surface-3: #1f2630;    /* hover/selected bg */
+        --surface: #11151a; /* card */
+        --surface-2: #171c22; /* toolbar / panel bg */
+        --surface-3: #1f2630; /* hover/selected bg */
 
-        --border: rgba(255,255,255,0.14);
-        --muted: rgba(255,255,255,0.72);
-        --shadow: rgba(0,0,0,0.45);
+        --border: rgba(255, 255, 255, 0.14);
+        --muted: rgba(255, 255, 255, 0.72);
+        --shadow: rgba(0, 0, 0, 0.45);
 
         /* חדש: accent לשכבות/בחירה */
         --accent: #7aa2ff;
-        --accent-weak: rgba(122,162,255,0.18);
+        --accent-weak: rgba(122, 162, 255, 0.18);
 
         /* חדש: צבע “בחירה אפורה” */
-        --selected: rgba(255,255,255,0.12);
-        --hovered: rgba(255,255,255,0.08);
+        --selected: rgba(255, 255, 255, 0.12);
+        --hovered: rgba(255, 255, 255, 0.08);
     }
 }
 

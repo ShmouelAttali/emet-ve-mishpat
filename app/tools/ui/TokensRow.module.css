@@ -1,7 +1,8 @@
 .row {
     display: grid;
-    gap: 8px;
+    gap: var(--gap, 8px);
 }
+
 
 /* הכפתור הבסיסי */
 .tokenBtn {
@@ -16,9 +17,16 @@
     position: relative;
     transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease,
     background 120ms ease;
-    /* אם אתה רואה שטעמים נחתכים – תוריד את זה */
+    width: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
+
+
+
+
 
 /* מצבים */
 .selected {
@@ -69,15 +77,16 @@
 
 /* טקסט מקראי */
 .raw {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
     margin-top: 2px;
     font-size: 24px;
     direction: rtl;
     unicode-bidi: plaintext;
-
-    /* משתמש בפונט המקראי שהגדרת ב-globals.css */
-    /* אם אתה רוצה להיות בטוח שזה תמיד יהיה זה, אפשר גם לשים פה: */
-    /* font-family: var(--font-biblical), serif; */
-
     line-height: 2.3;
     padding-bottom: 0.2em;
 }
@@ -87,6 +96,9 @@
     font-size: 11px;
     opacity: 0.75;
     margin-top: 8px;
+
+    line-height: 1.1;
+    min-height: calc(2 * 1.1em);  /* מקום לשתי שורות תמיד */
 }
 
 /* סימני פסק / סוף פסוק */
@@ -96,4 +108,38 @@
     bottom: 10px;
     font-size: 24px;
     opacity: 0.9;
+}
+
+
+@media (max-width: 640px) {
+    .tokenBtn {
+        min-height: 56px;      /* אפשר גם 52 אם בא לך קומפקטי יותר */
+        padding: 8px 8px 6px;
+        overflow: hidden;      /* נשאיר hidden אבל נקטין תוכן */
+    }
+
+    .raw {
+        font-size: 16px !important;  /* היה 24 */
+        line-height: 1.75 !important; /* היה 2.3 */
+        margin-top: 0;
+        padding-bottom: 0.05em;
+    }
+
+    .meta {
+        font-size: 9px;
+        margin-top: 3px;
+
+        line-height: 1.05;
+        min-height: calc(3 * 1.05em); /* גם במובייל תמיד 2 שורות */
+    }
+
+    .accentBar {
+        height: 4px;
+    }
+
+    .suffix {
+        font-size: 14px;
+        left: 6px;
+        bottom: 6px;
+    }
 }

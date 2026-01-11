@@ -77,3 +77,17 @@ export const TAAM_TO_AMT_GLYPH_KEY: Record<Taam, AmtGlyphKey | null> = {
     // --- fallback ---
     UNKNOWN: null,
 };
+
+const KEY_TO_U: Record<AmtGlyphKey, string> = Object.entries(GLYPH_TO_KEY).reduce(
+    (acc, [u, key]) => {
+        acc[key] = u;
+        return acc;
+    },
+    {} as Record<AmtGlyphKey, string>
+);
+
+export function uOf(key: AmtGlyphKey): string {
+    const u = KEY_TO_U[key];
+    if (!u) throw new Error(`Missing KEY_TO_U for ${key}`);
+    return u;
+}

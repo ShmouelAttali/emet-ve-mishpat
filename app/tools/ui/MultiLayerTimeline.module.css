@@ -18,3 +18,60 @@
     opacity: 0.75;
     color: #111;
 }
+
+/* wrapper שמחזיק את הגובה אחרי scale */
+.fitWrap {
+    width: 100%;
+}
+
+/* זה האלמנט שעושים עליו scale */
+.fitInner {
+    transform-origin: top right; /* RTL - מצמיד לימין */
+}
+
+.windowBar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    margin-bottom: 8px;
+}
+
+.windowBtn{
+    height: 36px;
+    min-width: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+}
+
+.windowLabel{
+    font-size: 12px;
+    opacity: 0.75;
+    white-space: nowrap;
+}
+
+
+.scrollX {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    touch-action: pan-x pan-y;   /* מאפשר גם אנכי וגם אופקי */
+}
+
+.inner {
+    --col: 64px;   /* ברירת מחדל */
+    --gap: 8px;
+}
+@media (max-width: 640px) {
+    .inner {
+        --col: 64px; /* מובייל */
+        --gap: 8px;
+    }
+}

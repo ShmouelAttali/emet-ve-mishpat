@@ -16,6 +16,7 @@ export function TokensRow({
                               onSelect,
                               taamim,
                               highlightedSourceIndexes,
+                              gridCols
                           }: {
     tokens: DisplayToken[];
     selectedSourceIndex?: number | null;
@@ -23,9 +24,9 @@ export function TokensRow({
     taamim: Array<TokenStep2Enriched>;
     highlightedSourceIndexes?: Set<number>;
     hoveredLabel?: string;
+    gridCols: string;
 }) {
     const n = tokens.length;
-    const gridCols = `repeat(${n}, minmax(72px, 1fr))`;
 
     return (
         <div className={styles.row} style={{gridTemplateColumns: gridCols}}>

@@ -7,7 +7,7 @@ import {SelectedTokenPanel} from "../tools/ui/SelectedTokenPanel";
 import {PsalmsNavBar} from "./PsalmsNavBar";
 import styles from "../tools/ToolsPage.module.css";
 import {toHebrewNumeral} from "@/lib/gematria";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
 type ApiPsalmsResponse = {
     verse: { chapter: number; verse: number; text: string };
@@ -23,7 +23,7 @@ type VersionsRow = {
     count_rows: number;
 };
 
-export default function PsalmsPage(props: {
+export default function PsalmsPage(_props: {
     initialChapter: number;
     initialVerse: number;
     initialVersion: string;
@@ -52,29 +52,29 @@ export default function PsalmsPage(props: {
         if (next.verse != null) sp.set("verse", String(next.verse));
         if (next.version != null) sp.set("version", next.version);
 
-        router.push(`${pathname}?${sp.toString()}`, { scroll: false });
+        router.push(`${pathname}?${sp.toString()}`, {scroll: false});
     }
 
     function onChangeChapter(c: number) {
         setChapter(c);
         // נבחר בינתיים פסוק 1; ה-NavBar שלך כבר מתקן לפסוק ראשון זמין אחרי fetch
         setVerse(1);
-        pushUrl({ chapter: c, verse: 1 });
+        pushUrl({chapter: c, verse: 1});
     }
 
     function onChangeVerse(v: number) {
         setVerse(v);
-        pushUrl({ verse: v });
+        pushUrl({verse: v});
     }
 
     function onChangeVersion(v: string) {
         setVersion(v);
-        pushUrl({ version: v });
+        pushUrl({version: v});
     }
 
     useEffect(() => {
         (async () => {
-            const res = await fetch("/api/analysis-versions", { cache: "no-store" });
+            const res = await fetch("/api/analysis-versions", {cache: "no-store"});
             if (!res.ok) throw new Error(await res.text());
             const rows: VersionsRow[] = await res.json();
             setVersions(rows);
@@ -87,7 +87,7 @@ export default function PsalmsPage(props: {
 
             if (rows.length > 0) {
                 setVersion(rows[0].analysis_version);
-                pushUrl({ version: rows[0].analysis_version });
+                pushUrl({version: rows[0].analysis_version});
             }
         })().catch((e) => setErr(String(e)));
         // eslint-disable-next-line react-hooks/exhaustive-deps

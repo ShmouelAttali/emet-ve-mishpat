@@ -3,7 +3,12 @@ import {Heebo} from "next/font/google";
 import "./globals.css";
 import localFont from "next/font/local";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import type { Viewport } from "next";
 
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+};
 
 const sblHebrew = localFont({
     src: [{path: "../public/fonts/SBL_Hbrw.woff2", weight: "400", style: "normal"}],

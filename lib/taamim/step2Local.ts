@@ -1,15 +1,32 @@
 import type {Mark, TokenGlyph} from "../text/tokenize";
-import {type AmtGlyphKey, GLYPH_TO_KEY} from "./amtRegistry";
-import {Taam} from "@/lib/taamim/model/taam";
+import {type AmtGlyphKey, GLYPH_TO_KEY, uOf} from "./amtRegistry";
+import {Taam, TAAM_META} from "@/lib/taamim/model/taam";
+
+function findFirstClusterIndexOfAnyKey(tok: TokenGlyph, keys: AmtGlyphKey[]): number | undefined {
+    for (const k of keys) {
+        const u = uOf(k);
+        const idx = findFirstClusterIndexOfAnyU(tok, u);
+        if (idx != null) return idx;
+    }
+    return undefined;
+}
 
 export type Role = "mesharet" | "mafsik";
 
-export type IdentifiedTaam = { kind: "KNOWN" | "UNKNOWN"; key: Taam; hebName: string; role: Role; consumedU: string[] };
+export type IdentifiedTaam = {
+    kind: "KNOWN" | "UNKNOWN";
+    key: Taam;
+    hebName: string;
+    role: Role;
+    consumedKeys: AmtGlyphKey[];
+    taamClusterIndex?: number;
+};
 
 export type TokenStep2 = {
     tokenId: string;
     observed: { hasPasekAfter: boolean; hasSofPasuqAfter: boolean };
-    identified: IdentifiedTaam | undefined;
+    identified?: IdentifiedTaam;
+    metegClusterIndex?: number;
 };
 
 export type Step2LocalResult = {
@@ -20,30 +37,22 @@ export type Step2LocalResult = {
     };
 };
 
-const METEG_U = "U+05BD"; // ֽ (niqqud; becomes SILUQ by context)
+function findAllClusterIndicesOfU(tok: TokenGlyph, u: string): number[] {
+    const out: number[] = [];
+    for (let i = 0; i < tok.clusters.length; i++) {
+        if (tok.clusters[i].marks.some((m) => m.u === u)) out.push(i);
+    }
+    return out;
+}
+
+function findFirstClusterIndexOfAnyU(tok: TokenGlyph, u: string): number | undefined {
+    const idx = findAllClusterIndicesOfU(tok, u)[0];
+    if (idx != null) return idx;
+    return undefined;
+}
 
 function allMarks(tok: TokenGlyph): Mark[] {
     return tok.clusters.flatMap((c) => c.marks);
-}
-
-function taamUs(tok: TokenGlyph): string[] {
-    return allMarks(tok)
-        .filter((m) => m.kind === "TAAM")
-        .map((m) => m.u);
-}
-
-function hasTaamU(tok: TokenGlyph, u: string): boolean {
-    return taamUs(tok).includes(u);
-}
-
-function niqqudUs(tok: TokenGlyph): string[] {
-    return allMarks(tok)
-        .filter((m) => m.kind === "NIQQUD")
-        .map((m) => m.u);
-}
-
-function hasMeteg(tok: TokenGlyph): boolean {
-    return niqqudUs(tok).includes(METEG_U);
 }
 
 function markKeys(tok: TokenGlyph): AmtGlyphKey[] {
@@ -64,103 +73,79 @@ function isTaamOnLastLetter(tok: TokenGlyph, taamU: string): boolean {
     );
 }
 
-function uniq(arr: string[]) {
-    return Array.from(new Set(arr));
-}
-
-type KnownBuilder = { key: Taam; hebName: string; role: Role; consumedU: string[] };
-
 function firstIdentifiedTaam(
     cur: TokenGlyph,
-    prev: TokenGlyph | undefined,
     ctx: {
         hasPasekAfter: boolean;
         hasSofPasuqAfter: boolean;
         isLastWordContext: boolean;
+        silluqClusterIndex?: number; // חדש
     }
 ): IdentifiedTaam | undefined {
-    const add = (k: KnownBuilder): IdentifiedTaam => ({
-        kind: "KNOWN",
-        key: k.key,
-        hebName: k.hebName,
-        role: k.role,
-        consumedU: uniq(k.consumedU),
-    });
+    const add = (taam: Taam, opts?: { taamClusterIndex?: number }): IdentifiedTaam => {
+        let taamMetaElement = TAAM_META[taam];
+        const taamClusterIndex =
+            opts?.taamClusterIndex ?? findFirstClusterIndexOfAnyKey(cur, taamMetaElement.glyphs);
 
-    // 1) SILUQ: meteg in last-word context
-    if (ctx.isLastWordContext && hasMeteg(cur)) {
-        return add({key: "SILLUQ", hebName: "סילוק", role: "mafsik", consumedU: []});
+        return {
+            kind: "KNOWN",
+            key: taam,
+            hebName: taamMetaElement.hebName,
+            role: taamMetaElement.role,
+            consumedKeys: taamMetaElement.glyphs,
+            taamClusterIndex,
+        };
+    };
+
+    if (ctx.silluqClusterIndex != null) {
+        // consumedKeys יכול להיות [] או ["U+05BD"] – זה בעיקר לדיבאג; האינדקס הוא הדבר החשוב.
+        return add("SILLUQ", {taamClusterIndex: ctx.silluqClusterIndex});
     }
 
     // 2) ATNACH
     if (hasKey(cur, "ATNACH")) {
-        return add({key: "ATNACH", hebName: "אתנח", role: "mafsik", consumedU: ["U+0591"]});
+        return add("ATNACH");
     }
 
     // 3) REVIa_MUGRASH (שים לפני REVIa הרגיל אם זה אמור “לנצח” אותו)
     if (hasKey(cur, "REVIa") && hasKey(cur, "MUGRASH_MARK")) {
-        return add({
-            key: "REVIa_MUGRASH",
-            hebName: "רביע מוגרש",
-            role: "mafsik",
-            consumedU: ["U+0597", "U+059D"],
-        });
+        return add("REVIa_MUGRASH");
     }
 
     // 4) REVIa
     if (hasKey(cur, "REVIa")) {
-        return add({key: "REVIa", hebName: "רביע", role: "mafsik", consumedU: ["U+0597"]});
+        return add("REVIa");
     }
 
     // 5) PAZER
     if (hasKey(cur, "PAZER")) {
-        return add({key: "PAZER", hebName: "פזר", role: "mafsik", consumedU: ["U+05A1"]});
+        return add("PAZER");
     }
 
     // 6) TSINOR / TSINORIT
     if (hasKey(cur, "TSINOR")) {
-        const isTsinor = isTaamOnLastLetter(cur, "U+05AE");
-        return add({
-            key: isTsinor ? "TSINOR" : "TSINORIT",
-            hebName: isTsinor ? "צינור" : "צינורית",
-            role: isTsinor ? "mafsik" : "mesharet",
-            consumedU: ["U+05AE"],
-        });
+        const isTsinor = isTaamOnLastLetter(cur, uOf("TSINOR"));
+        return add(isTsinor ? "TSINOR" : "TSINORIT");
     }
 
     // 7) DCHI
     if (hasKey(cur, "DCHI")) {
-        return add({key: "DCHI", hebName: "דחי", role: "mafsik", consumedU: ["U+05AD"]});
+        return add("DCHI");
     }
 
     // 8) QADMA / AZLA_LEGARMEH
     if (hasKey(cur, "QADMA")) {
-        return add({
-            key: ctx.hasPasekAfter ? "AZLA_LEGARMEH" : "QADMA",
-            hebName: ctx.hasPasekAfter ? "אזלא לגרמיה" : "קדמא",
-            role: ctx.hasPasekAfter ? "mafsik" : "mesharet",
-            consumedU: ["U+05A8"],
-        });
+        return add(ctx.hasPasekAfter ? "AZLA_LEGARMEH" : "QADMA");
     }
 
     // 9) MAHAPAKH / MAHAPAKH_LEGARMEH
     if (hasKey(cur, "MAHAPAKH")) {
-        return add({
-            key: ctx.hasPasekAfter ? "MAHAPAKH_LEGARMEH" : "MAHAPAKH",
-            hebName: ctx.hasPasekAfter ? "מהפך לגרמיה" : "מהפך",
-            role: ctx.hasPasekAfter ? "mafsik" : "mesharet",
-            consumedU: ["U+05A4"],
-        });
+        return add(ctx.hasPasekAfter ? "MAHAPAKH_LEGARMEH" : "MAHAPAKH");
     }
 
     // 10) SHALSHELET (לפי פסק אחרי)
-    if (hasTaamU(cur, "U+0593")) {
-        return add({
-            key: ctx.hasPasekAfter ? "SHALSHELET_GEDOLA" : "SHALSHELET_KETANA",
-            hebName: ctx.hasPasekAfter ? "שלשלת גדולה" : "שלשלת קטנה",
-            role: ctx.hasPasekAfter ? "mafsik" : "mesharet",
-            consumedU: ["U+0593"],
-        });
+    if (hasKey(cur, "SHALSHELET")) {
+        return add(ctx.hasPasekAfter ? "SHALSHELET_GEDOLA" : "SHALSHELET_KETANA");
     }
 
     // 11) YORED: U+05A5
@@ -169,43 +154,33 @@ function firstIdentifiedTaam(
 // (אין יותר הסתכלות על המילה הקודמת בשלב הזה)
     const hasYored = hasKey(cur, "YORED");
     if (hasYored) {
-        const hasOleSame = hasTaamU(cur, "U+05AB"); // OLE glyph on same token
+        const hasOleSame = hasKey(cur, "OLE");
 
         if (hasOleSame) {
-            return add({
-                key: "OLEH_VEYORED",
-                hebName: "עולה ויורד",
-                role: "mafsik",
-                consumedU: ["U+05A5", "U+05AB"],
-            });
+            return add("OLEH_VEYORED");
         }
 
-        return add({
-            key: "MERCHA",
-            hebName: "מירכא",
-            role: "mesharet",
-            consumedU: ["U+05A5"],
-        });
+        return add("MERCHA");
     }
 
     // 12) TIPCHA
     if (hasKey(cur, "TIPCHA")) {
-        return add({key: "TIPCHA", hebName: "טיפחא", role: "mesharet", consumedU: ["U+0596"]});
+        return add("TIPCHA");
     }
 
     // 13) ILUY
     if (hasKey(cur, "ILUY")) {
-        return add({key: "ILUY", hebName: "עילוי", role: "mesharet", consumedU: ["U+05AC"]});
+        return add("ILUY");
     }
 
     // 14) MUNACH
     if (hasKey(cur, "MUNACH")) {
-        return add({key: "MUNACH", hebName: "מונח", role: "mesharet", consumedU: ["U+05A3"]});
+        return add("MUNACH");
     }
 
     // 15) GALGAL
     if (hasKey(cur, "GALGAL")) {
-        return add({key: "GALGAL", hebName: "גלגל", role: "mesharet", consumedU: ["U+05AA"]});
+        return add("GALGAL");
     }
 
     return undefined;
@@ -214,6 +189,7 @@ function firstIdentifiedTaam(
 
 export function identifyStep2Local(tokens: TokenGlyph[]): Step2LocalResult {
     const out: TokenStep2[] = [];
+
 
     const sofPasuqIndex = tokens.findIndex((t) => !!t.isSofPasuq);
     const lastWordIndex = sofPasuqIndex >= 0 ? sofPasuqIndex - 1 : tokens.length - 1;
@@ -239,12 +215,43 @@ export function identifyStep2Local(tokens: TokenGlyph[]): Step2LocalResult {
 
         const isLastWordContext = hasSofPasuqAfter || i === lastWordIndex || isLastToken;
 
-        const prevTok = i > 0 ? tokens[i - 1] : undefined;
+        const metegClusters = findAllClusterIndicesOfU(tok, uOf("METEG")); // U+05BD
 
-        const identified = firstIdentifiedTaam(tok, prevTok, {
+        let metegClusterIndex: number | undefined;
+        let silluqClusterIndex: number | undefined;
+
+        if (!isLastWordContext) {
+            // לא מילה אחרונה: 0 או 1 מתג זה תקין
+            if (metegClusters.length === 1) {
+                metegClusterIndex = metegClusters[0];
+            } else if (metegClusters.length > 1) {
+                console.warn(`Found ${metegClusters.length} metegs in a non-last word: ${tok.raw}`);
+                // אפשר לבחור ראשון כדי "להמשיך לחיות":
+                metegClusterIndex = metegClusters[0];
+            }
+        } else {
+            // מילה אחרונה:
+            // 0 => אין כלום
+            // 1 => סילוק
+            // 2 => ראשון מתג, שני סילוק
+            if (metegClusters.length === 1) {
+                silluqClusterIndex = metegClusters[0];
+            } else if (metegClusters.length === 2) {
+                metegClusterIndex = metegClusters[0];
+                silluqClusterIndex = metegClusters[1];
+            } else if (metegClusters.length > 2) {
+                console.warn(`Found ${metegClusters.length} metegs in last-word context: ${tok.raw}`);
+                // fallback: ראשון מתג, אחרון סילוק
+                metegClusterIndex = metegClusters[0];
+                silluqClusterIndex = metegClusters[metegClusters.length - 1];
+            }
+        }
+
+        const identified = firstIdentifiedTaam(tok, {
             hasPasekAfter,
             hasSofPasuqAfter,
             isLastWordContext,
+            silluqClusterIndex,
         });
 
         if (identified?.kind === "KNOWN" && identified.key === "SILLUQ") {
@@ -255,12 +262,9 @@ export function identifyStep2Local(tokens: TokenGlyph[]): Step2LocalResult {
             tokenId: tok.id,
             observed: {hasPasekAfter, hasSofPasuqAfter},
             identified,
+            metegClusterIndex,
         });
     }
-
-    // NOTE: הפוסט-פאס שלך לגבי OLEH_VEYORED צריך התאמה, כי אין יותר מערכים.
-    // אם אתה עדיין רוצה את הלוגיקה הזו, עדיף לטפל ב-OLEH_VEYORED בתוך הלולאה
-    // (כשיש לך prev) ולקבוע identified בהתאם.
 
     return {
         tokens: out,
