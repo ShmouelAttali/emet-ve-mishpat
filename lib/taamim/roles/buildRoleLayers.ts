@@ -1,9 +1,8 @@
 import type {TokenGlyph} from "../../text/tokenize";
-import type {TokenStep2} from "../step2Local";
 import {TAAM_META} from "../model/taam";
 import type {Inference} from "../model/inferred";
 
-import type {RoleLayers, RolesDebug, Span, TokenStep2Enriched} from "./types";
+import type {RoleLayers, RolesDebug, Span, TokenStep2, TokenStep2Enriched} from "@/lib/taamim/types"
 
 import {applyInference} from "./apply/applyInference";
 import {inferKings} from "./infer/kings/inferKings";
@@ -27,7 +26,13 @@ function inferenceAnchorLabel(inf: Inference): { label: string; name: string } {
     if (taam === "REVIa_GADOL") return {label: "רביע גדול", name: "משנה: רביע גדול"};
     if (taam === "REVIa_MUGRASH") return {label: "רביע מוגרש", name: "אחרי אתנח: רביע מוגרש"};
 
-    if (taam === "MAHAPAKH_LEGARMEH") return {label: "מהפך לגרמיה", name: "שליש: מהפך לגרמיה"};
+    if (taam === "MAHAPAKH_LEGARMEH") {
+        if (inf.inferredCode === 'MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_WHEN_SHALSHELET_GEDOLA_PRESENT' || inf.inferredCode === 'MAHAPAKH_LEGARMEH_ROLE_AFTER_ATNACH_BY_REVIa_MUGRASH_IN_DOMAIN') {
+            return {label: "מהפך לגרמיה", name: "אחרי אתנח: מהפך לגרמיה"};
+        } else {
+            return {label: "מהפך לגרמיה", name: "שליש: מהפך לגרמיה"};
+        }
+    }
     if (taam === "AZLA_LEGARMEH") return {label: "אזלא לגרמיה", name: "שליש: אזלא לגרמיה"};
     if (taam === "PAZER") return {label: "פזר", name: "שליש: פזר"};
 
@@ -38,7 +43,11 @@ export function buildRoleLayers(
     tokens: TokenGlyph[],
     step2: TokenStep2[],
     silluqIndex?: number
-): { layers: RoleLayers; debug: RolesDebug; tokens: TokenStep2Enriched[] } {
+): {
+    layers: RoleLayers;
+    debug: RolesDebug;
+    tokens: TokenStep2Enriched[]
+} {
     // 0) Determine emperor boundary from silluqIndex
     if (silluqIndex == null) {
         let last = tokens.length - 1;
@@ -62,7 +71,7 @@ export function buildRoleLayers(
         };
     });
 
-    // taken map
+    // 'taken' map
     const taken = createTaken();
 
     // 2) Emperor span

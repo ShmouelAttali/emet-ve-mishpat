@@ -1,4 +1,4 @@
-import type { Anchor, InferInput, InferRule } from "../types";
+import type { Anchor, InferInput, InferRule } from "@/lib/taamim/roles/infer/types";
 
 export type ViceroyLeader = Anchor & {
     /** Optional: the containing king (useful for rare third-level rules) */

@@ -2,7 +2,8 @@ import {normalizeHebrewText} from "./text/normalize";
 import {tokenizeNormalizedText} from "./text/tokenize";
 import {identifyStep2Local} from "./taamim/step2Local";
 import {buildRoleLayers} from "./taamim/roles/buildRoleLayers";
-import {AnalyzeResult} from "@/app/tools/types";
+
+import {AnalyzeResult} from "@/lib/taamim/types";
 
 function buildTaamInventory(tokens: ReturnType<typeof tokenizeNormalizedText>) {
     const map = new Map<
@@ -33,17 +34,19 @@ function buildTaamInventory(tokens: ReturnType<typeof tokenizeNormalizedText>) {
     return Array.from(map.values()).sort((a, b) => a.u.localeCompare(b.u));
 }
 
-export function analyzeHebrewTaamim(text: string): AnalyzeResult {
+export function analyzeHebrewTaamim(text: string, chapter?: number, verse?: number): AnalyzeResult {
     const normalized = normalizeHebrewText(text);
     const tokens = tokenizeNormalizedText(normalized);
 
-    const taamInventory = buildTaamInventory(tokens);
+    const _taamInventory = buildTaamInventory(tokens);
 
     const taams = identifyStep2Local(tokens);
 
     const enrichedTaamim = buildRoleLayers(tokens, taams.tokens, taams.anchors.silluqIndex);
 
     return {
+        chapter,
+        verse,
         normalized,
         tokens,
         layers: enrichedTaamim.layers,

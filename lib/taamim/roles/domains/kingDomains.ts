@@ -1,5 +1,5 @@
 import type {Inference} from "../../model/inferred";
-import type {Span} from "../types";
+import type {Span} from "@/lib/taamim/types";
 import {buildAfterAtnachKingSpan, buildSpansToAnchors} from "../engine/spanBuilder";
 import {KingLeader} from "@/lib/taamim/roles/infer/viceroys/types";
 

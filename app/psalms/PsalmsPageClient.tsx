@@ -1,13 +1,15 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import type {AnalyzeResult} from "../tools/types"; // עדכן אם צריך
 import {MultiLayerTimeline} from "../tools/ui/MultiLayerTimeline";
 import {SelectedTokenPanel} from "../tools/ui/SelectedTokenPanel";
 import {PsalmsNavBar} from "./PsalmsNavBar";
 import styles from "../tools/ToolsPage.module.css";
 import {toHebrewNumeral} from "@/lib/gematria";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {AnalyzeResult, EmetBook} from "@/lib/taamim/types";
+import {bookToHebName} from "@/lib/bookMetaData";
+
 
 type ApiPsalmsResponse = {
     verse: { chapter: number; verse: number; text: string };
@@ -24,15 +26,17 @@ type VersionsRow = {
 };
 
 export default function PsalmsPage(_props: {
+    initialBook: EmetBook;
     initialChapter: number;
     initialVerse: number;
     initialVersion: string;
 }) {
-    const [chapter, setChapter] = useState(1);
-    const [verse, setVerse] = useState(1);
+    const [book, setBook] = useState<EmetBook>(_props.initialBook);
+    const [chapter, setChapter] = useState(_props.initialChapter);
+    const [verse, setVerse] = useState(_props.initialVerse);
+    const [version, setVersion] = useState<string>(_props.initialVersion);
 
     const [versions, setVersions] = useState<VersionsRow[]>([]);
-    const [version, setVersion] = useState<string>("");
 
     const [result, setResult] = useState<AnalyzeResult | null>(null);
     const [verseText, setVerseText] = useState<string>("");
@@ -45,14 +49,24 @@ export default function PsalmsPage(_props: {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    function pushUrl(next: { chapter?: number; verse?: number; version?: string }) {
+    function pushUrl(next: { book?: EmetBook, chapter?: number; verse?: number; version?: string }) {
         const sp = new URLSearchParams(searchParams?.toString() ?? "");
 
+        if (next.book != null) sp.set("book", String(next.book));
         if (next.chapter != null) sp.set("chapter", String(next.chapter));
         if (next.verse != null) sp.set("verse", String(next.verse));
         if (next.version != null) sp.set("version", next.version);
 
         router.push(`${pathname}?${sp.toString()}`, {scroll: false});
+    }
+
+    function onChangeBook(b: EmetBook) {
+        setBook(b);
+        // נבחר בינתיים פסוק 1; ה-NavBar שלך כבר מתקן לפסוק ראשון זמין אחרי fetch
+
+        setChapter(1);
+        setVerse(1);
+        pushUrl({book: b, chapter: 1, verse: 1, version});
     }
 
     function onChangeChapter(c: number) {
@@ -94,15 +108,17 @@ export default function PsalmsPage(_props: {
     }, []);
 
     useEffect(() => {
+        const b = (searchParams.get("book") ?? "Psalms") as EmetBook;
         const c = Number(searchParams.get("chapter") ?? 1);
         const v = Number(searchParams.get("verse") ?? 1);
         const ver = searchParams.get("version") ?? "";
 
-        if (Number.isFinite(c) && c >= 1 && c <= 150) setChapter(c);
-        if (Number.isFinite(v) && v >= 1) setVerse(v); // פסוקים משתנים, נבדוק זמינות בהמשך
+        setBook(b);
+
+        if (Number.isFinite(c) && c >= 1) setChapter(c);
+        if (Number.isFinite(v) && v >= 1) setVerse(v);
         if (ver) setVersion(ver);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // רק פעם אחת בטעינה
+    }, [searchParams]);
 
     async function load() {
         if (!version) return;
@@ -112,7 +128,7 @@ export default function PsalmsPage(_props: {
         setSelectedSourceIndex(null);
 
         try {
-            const res = await fetch(`/api/psalms/${chapter}/${verse}?version=${encodeURIComponent(version)}`, {
+            const res = await fetch(`/api/${book}/${chapter}/${verse}?version=${encodeURIComponent(version)}`, {
                 cache: "no-store",
             });
             if (!res.ok) throw new Error(await res.text());
@@ -135,19 +151,21 @@ export default function PsalmsPage(_props: {
         if (!version) return;
         load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chapter, verse, version]);
+    }, [book, chapter, verse, version]);
 
     return (
         <main className={styles.main}>
             <div className={styles.card}>
-                <h1 className={styles.title}>טעמי אמ&quot;ת — תהלים (DB)</h1>
+                <h1 className={styles.title}>טעמי אמ&quot;ת</h1>
 
                 <PsalmsNavBar
+                    book={book}
                     chapter={chapter}
                     verse={verse}
                     version={version}
                     versions={versions}
                     loading={loading}
+                    onChangeBook={onChangeBook}
                     onChangeChapter={onChangeChapter}
                     onChangeVerse={onChangeVerse}
                     onChangeVersion={onChangeVersion}
@@ -159,7 +177,7 @@ export default function PsalmsPage(_props: {
                             {verseText}
                         </div>
                         <div className={styles.verseMeta}>
-                            תהלים פרק {toHebrewNumeral(chapter)} פסוק {toHebrewNumeral(verse)} · version: {version}
+                            {bookToHebName[book]} פרק {toHebrewNumeral(chapter)} פסוק {toHebrewNumeral(verse)} · version: {version}
                         </div>
                     </div>
                 )}

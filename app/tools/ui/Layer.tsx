@@ -1,7 +1,7 @@
-import {Span} from "../types";
 import {spanToDisplayRange} from "./displayModel";
 import styles from "./Layer.module.css";
 import {rtlRangeToGridColumns} from "@/app/tools/ui/rtlGrid";
+import {Span} from "@/lib/taamim/types";
 
 function cx(...parts: Array<string | false | null | undefined>) {
     return parts.filter(Boolean).join(" ");

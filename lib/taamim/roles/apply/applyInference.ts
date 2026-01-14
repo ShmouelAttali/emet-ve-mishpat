@@ -1,4 +1,4 @@
-import type { TokenStep2Enriched } from "../types";
+import type { TokenStep2Enriched } from "@/lib/taamim/types";
 import { TAAM_META } from "../../model/taam";
 import { INFERRED_CODE_REASON, type Inference } from "../../model/inferred";
 

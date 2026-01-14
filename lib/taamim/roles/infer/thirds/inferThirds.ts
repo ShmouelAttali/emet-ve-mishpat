@@ -1,11 +1,11 @@
 import type { TokenGlyph } from "@/lib/text/tokenize";
-import type { TokenStep2 } from "@/lib/taamim/step2Local";
 import type { Inference } from "@/lib/taamim/model/inferred";
 import type { TakenState } from "@/lib/taamim/roles/engine/taken";
 import { isTaken } from "@/lib/taamim/roles/engine/taken";
 import { hasKnown } from "@/lib/taamim/roles/infer/inferUtils";
 
 import type { ThirdRule, ThirdRuleInput, ViceroyLeader } from "./types";
+import {TokenStep2} from "@/lib/taamim/types";
 
 // --- rules (for now they are simple inline scans; can be split later) ---
 

@@ -1,6 +1,7 @@
 import type {Mark, TokenGlyph} from "../text/tokenize";
 import {type AmtGlyphKey, GLYPH_TO_KEY, uOf} from "./amtRegistry";
 import {Taam, TAAM_META} from "@/lib/taamim/model/taam";
+import {IdentifiedTaam, Step2LocalResult, TokenStep2} from "@/lib/taamim/types";
 
 function findFirstClusterIndexOfAnyKey(tok: TokenGlyph, keys: AmtGlyphKey[]): number | undefined {
     for (const k of keys) {
@@ -10,32 +11,6 @@ function findFirstClusterIndexOfAnyKey(tok: TokenGlyph, keys: AmtGlyphKey[]): nu
     }
     return undefined;
 }
-
-export type Role = "mesharet" | "mafsik";
-
-export type IdentifiedTaam = {
-    kind: "KNOWN" | "UNKNOWN";
-    key: Taam;
-    hebName: string;
-    role: Role;
-    consumedKeys: AmtGlyphKey[];
-    taamClusterIndex?: number;
-};
-
-export type TokenStep2 = {
-    tokenId: string;
-    observed: { hasPasekAfter: boolean; hasSofPasuqAfter: boolean };
-    identified?: IdentifiedTaam;
-    metegClusterIndex?: number;
-};
-
-export type Step2LocalResult = {
-    tokens: TokenStep2[];
-    anchors: {
-        silluqIndex?: number;       // token index of the word with silluq (meteg in last-word context)
-        sofPasuqIndex?: number;     // index of ׃ token if exists
-    };
-};
 
 function findAllClusterIndicesOfU(tok: TokenGlyph, u: string): number[] {
     const out: number[] = [];
@@ -86,7 +61,6 @@ function firstIdentifiedTaam(
         let taamMetaElement = TAAM_META[taam];
         const taamClusterIndex =
             opts?.taamClusterIndex ?? findFirstClusterIndexOfAnyKey(cur, taamMetaElement.glyphs);
-
         return {
             kind: "KNOWN",
             key: taam,
@@ -98,7 +72,6 @@ function firstIdentifiedTaam(
     };
 
     if (ctx.silluqClusterIndex != null) {
-        // consumedKeys יכול להיות [] או ["U+05BD"] – זה בעיקר לדיבאג; האינדקס הוא הדבר החשוב.
         return add("SILLUQ", {taamClusterIndex: ctx.silluqClusterIndex});
     }
 

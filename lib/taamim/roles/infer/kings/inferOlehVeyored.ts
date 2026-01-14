@@ -1,8 +1,8 @@
 import type {TokenGlyph} from "@/lib/text/tokenize";
-import type {TokenStep2} from "@/lib/taamim/step2Local";
 import type {Inference} from "@/lib/taamim/model/inferred";
 import {hasKnown} from "@/lib/taamim/roles/infer/inferUtils";
 import {hasTaamOnLastSyllable, hasVowelNucleusBeforeLetterIndex} from "@/lib/taamim/syllables";
+import {TokenStep2} from "@/lib/taamim/types";
 
 
 const OLE_U = "U+05AB";   // ֫

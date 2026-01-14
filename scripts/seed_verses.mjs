@@ -5,10 +5,10 @@ import { neon } from "@neondatabase/serverless";
 if (!process.env.DATABASE_URL) throw new Error("Missing DATABASE_URL");
 const sql = neon(process.env.DATABASE_URL);
 
-const BOOK = "Psalms";
+const BOOK = "Job";
 
 // שנה את זה לשם הקובץ שלך
-const INPUT_FILE = path.resolve(process.cwd(), "psalms-mgketer.json");
+const INPUT_FILE = path.resolve(process.cwd(), "job-mgketer.json");
 
 function cleanText(s) {
     return String(s ?? "")

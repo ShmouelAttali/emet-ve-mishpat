@@ -1,4 +1,5 @@
-import type { Span } from "../types";
+import {Span} from "@/lib/taamim/types";
+
 
 export function buildSpansToAnchors(opts: {
     layer: 1 | 2 | 3 | 4;

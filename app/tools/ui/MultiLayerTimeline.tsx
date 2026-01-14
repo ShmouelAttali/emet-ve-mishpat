@@ -1,9 +1,8 @@
 import React from "react";
-import {Span} from "../types";
 import {buildDisplayTokens} from "./displayModel";
 import {Layer} from "./Layer";
 import {TokensRow} from "./TokensRow";
-import {TokenStep2Enriched} from "@/lib/taamim/roles/types";
+import {Span, TokenStep2Enriched} from "@/lib/taamim/types";
 import styles from "./MultiLayerTimeline.module.css";
 
 /**

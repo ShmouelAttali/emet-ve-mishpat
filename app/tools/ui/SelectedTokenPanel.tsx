@@ -1,4 +1,4 @@
-import {AnalyzeResult} from "../types";
+import {AnalyzeResult} from "@/lib/taamim/types";
 
 export function SelectedTokenPanel({
                                        result,

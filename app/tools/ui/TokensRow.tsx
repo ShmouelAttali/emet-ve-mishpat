@@ -1,5 +1,5 @@
 import {DisplayToken} from "@/app/tools/ui/displayModel";
-import {TokenStep2Enriched} from "@/lib/taamim/roles/types";
+import {TokenStep2Enriched} from "@/lib/taamim/types";
 import {TAAM_META} from "@/lib/taamim/model/taam";
 import styles from "./TokensRow.module.css";
 import {rtlRangeToGridColumns} from "@/app/tools/ui/rtlGrid";

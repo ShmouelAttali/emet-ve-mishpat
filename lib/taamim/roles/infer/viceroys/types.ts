@@ -1,4 +1,5 @@
-import type {Anchor, InferInput, InferRule} from "../types";
+import {Anchor, InferInput, InferRule} from "@/lib/taamim/roles/infer/types";
+
 
 /**
  * The controlling King of the current king-domain.

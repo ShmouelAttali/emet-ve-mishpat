@@ -1,5 +1,6 @@
 import {AmtGlyphKey} from "@/lib/taamim/amtRegistry";
-import {Role} from "@/lib/taamim/step2Local";
+
+import {Role} from "@/lib/taamim/types";
 
 export type Taam =
     | "SILLUQ"

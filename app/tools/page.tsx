@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { AnalyzeResult } from "./types";
 import { MultiLayerTimeline } from "./ui/MultiLayerTimeline";
 import { SelectedTokenPanel } from "./ui/SelectedTokenPanel";
 import styles from "./ToolsPage.module.css";
+import {AnalyzeResult} from "@/lib/taamim/types";
 
 function cx(...parts: Array<string | false | null | undefined>) {
     return parts.filter(Boolean).join(" ");

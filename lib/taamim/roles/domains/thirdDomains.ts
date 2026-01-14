@@ -1,5 +1,5 @@
 import type { Inference } from "../../model/inferred";
-import type { Span } from "../types";
+import type { Span } from "@/lib/taamim/types";
 import { buildSpansToAnchors } from "../engine/spanBuilder";
 
 export type AnchorInfo = { tokenIndex: number; label: string; name: string };

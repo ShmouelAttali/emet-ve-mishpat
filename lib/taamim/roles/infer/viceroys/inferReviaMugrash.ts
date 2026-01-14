@@ -1,8 +1,8 @@
 import type {TokenGlyph} from "@/lib/text/tokenize";
-import type {TokenStep2} from "@/lib/taamim/step2Local";
 import type {Inference} from "@/lib/taamim/model/inferred";
 import {hasKnown} from "@/lib/taamim/roles/infer/inferUtils";
 import {countSyllablesFromStartToTaamAnchor} from "@/lib/taamim/syllables";
+import {TokenStep2} from "@/lib/taamim/types";
 
 // “שלשלת גדולה” אצלך: שלשלת + פסק אחרי המילה
 function isShalsheletGedola(tokens: TokenGlyph[], step2: TokenStep2[], i: number) {

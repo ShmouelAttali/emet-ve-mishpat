@@ -1,11 +1,11 @@
-import type { TokenGlyph } from "@/lib/text/tokenize";
-import type { TokenStep2 } from "@/lib/taamim/step2Local";
-import type { Inference } from "@/lib/taamim/model/inferred";
+import type {TokenGlyph} from "@/lib/text/tokenize";
+import type {Inference} from "@/lib/taamim/model/inferred";
 
-import type { Anchor, InferInput, InferRule } from "../types";
 
-import { inferAtnach } from "./inferAtnach";
-import { inferOlehVeyored } from "./inferOlehVeyored";
+import {inferAtnach} from "./inferAtnach";
+import {inferOlehVeyored} from "./inferOlehVeyored";
+import {TokenStep2} from "@/lib/taamim/types";
+import {Anchor, InferInput, InferRule} from "@/lib/taamim/roles/infer/types";
 
 export type EmperorLeader = Anchor & {
     /** end of pasuk (silluq index) */
@@ -86,8 +86,8 @@ export function inferKingsInEmperorDomain(opts: {
         tokens: opts.tokens,
         step2: opts.step2,
         // kings don't consume `taken`, but we keep the signature uniform
-        taken: { takenBy: new Map() } as any,
-        scope: { from: 0, to: opts.silluqIndex, prior: [] },
-        leader: { index: opts.silluqIndex, taam: "SILLUQ" as any, silluqIndex: opts.silluqIndex },
+        taken: {takenBy: new Map()} as any,
+        scope: {from: 0, to: opts.silluqIndex, prior: []},
+        leader: {index: opts.silluqIndex, taam: "SILLUQ" as any, silluqIndex: opts.silluqIndex},
     });
 }

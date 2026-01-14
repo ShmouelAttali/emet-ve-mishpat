@@ -1,8 +1,8 @@
 import type { TokenGlyph } from "@/lib/text/tokenize";
-import type { TokenStep2 } from "@/lib/taamim/step2Local";
 import type { Taam } from "@/lib/taamim/model/taam";
 import type { Inference } from "@/lib/taamim/model/inferred";
 import type { TakenState } from "@/lib/taamim/roles/engine/taken";
+import {TokenStep2} from "@/lib/taamim/types";
 
 /** Inclusive range */
 export type Domain = { from: number; to: number };
